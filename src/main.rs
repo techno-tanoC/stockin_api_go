@@ -8,6 +8,12 @@ use std::env;
 use std::net::SocketAddr;
 use std::sync::Arc;
 
+pub struct State {
+    pool: SqlitePool,
+}
+
+pub type SharedState = Arc<State>;
+
 #[tokio::main]
 async fn main() -> Result<()> {
     let database_url = env::var("DATABASE_URL")?;
@@ -26,9 +32,3 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
-
-pub struct State {
-    pool: SqlitePool,
-}
-
-pub type SharedState = Arc<State>;
