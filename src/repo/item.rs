@@ -1,9 +1,8 @@
 use anyhow::Result;
 use chrono::prelude::*;
-use serde::Serialize;
 use sqlx::sqlite::SqliteConnection;
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone)]
 pub struct Item {
     pub id: i64,
     pub title: String,
