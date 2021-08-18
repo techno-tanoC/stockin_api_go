@@ -1,6 +1,6 @@
 use axum::prelude::*;
 use chrono::prelude::*;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::convert::From;
 
 use crate::SharedState;
@@ -34,13 +34,19 @@ pub async fn index_item(state: extract::Extension<SharedState>) -> Result<Vec<It
     ok(items.into_iter().map(|i| i.into()).collect())
 }
 
+#[derive(Debug, Clone, Deserialize)]
+pub struct NewItem {
+    title: String,
+    url: String,
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct Id {
     id: i64,
 }
 
-pub async fn create_item(state: extract::Extension<SharedState>) -> Result<Id> {
+pub async fn create_item(new_item: extract::Json<NewItem>, state: extract::Extension<SharedState>) -> Result<Id> {
     let mut conn = state.pool.acquire().await.map_err(internal_error)?;
-    let id = repo::Item::insert(&mut conn, "1", "one").await.map_err(internal_error)?;
+    let id = repo::Item::insert(&mut conn, &new_item.title, &new_item.url).await.map_err(internal_error)?;
     ok(Id { id })
 }
