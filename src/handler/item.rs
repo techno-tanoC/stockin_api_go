@@ -7,12 +7,12 @@ use crate::SharedState;
 use crate::repo;
 
 #[derive(Debug, Clone, Serialize)]
-struct Item {
-    pub id: i64,
-    pub title: String,
-    pub url: String,
-    pub created_at: NaiveDateTime,
-    pub updated_at: NaiveDateTime,
+pub struct Item {
+    id: i64,
+    title: String,
+    url: String,
+    created_at: NaiveDateTime,
+    updated_at: NaiveDateTime,
 }
 
 impl From<repo::Item> for Item {
@@ -34,7 +34,7 @@ pub async fn index_item(state: extract::Extension<SharedState>) -> response::Jso
 }
 
 #[derive(Debug, Clone, Serialize)]
-struct Id {
+pub struct Id {
   id: i64,
 }
 
