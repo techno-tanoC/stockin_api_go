@@ -5,6 +5,7 @@ use std::convert::From;
 
 use crate::SharedState;
 use crate::repo;
+use super::response::*;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Item {
@@ -27,10 +28,10 @@ impl From<repo::Item> for Item {
   }
 }
 
-pub async fn index_item(state: extract::Extension<SharedState>) -> response::Json<Vec<Item>> {
-    let mut conn = state.pool.acquire().await.unwrap();
-    let items = repo::Item::all(&mut conn).await.unwrap();
-    response::Json(items.into_iter().map(|i| i.into()).collect())
+pub async fn index_item(state: extract::Extension<SharedState>) -> Result<Vec<Item>> {
+    let mut conn = state.pool.acquire().await.map_err(internal_error)?;
+    let items = repo::Item::all(&mut conn).await.map_err(internal_error)?;
+    ok(items.into_iter().map(|i| i.into()).collect())
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -38,9 +39,8 @@ pub struct Id {
     id: i64,
 }
 
-
-pub async fn create_item(state: extract::Extension<SharedState>) -> response::Json<Id> {
-    let mut conn = state.pool.acquire().await.unwrap();
-    let id = repo::Item::insert(&mut conn, "1", "one").await.unwrap();
-    response::Json(Id { id })
+pub async fn create_item(state: extract::Extension<SharedState>) -> Result<Id> {
+    let mut conn = state.pool.acquire().await.map_err(internal_error)?;
+    let id = repo::Item::insert(&mut conn, "1", "one").await.map_err(internal_error)?;
+    ok(Id { id })
 }
