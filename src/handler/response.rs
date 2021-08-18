@@ -3,9 +3,8 @@ use axum::{
   prelude::*,
 };
 use serde::Serialize;
-use std::result;
 
-pub type Result<T> = result::Result<(StatusCode, response::Json<Success<T>>), (StatusCode, response::Json<Message>)>;
+pub type Result<T> = std::result::Result<(StatusCode, response::Json<Success<T>>), (StatusCode, response::Json<Message>)>;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Success<T> {
