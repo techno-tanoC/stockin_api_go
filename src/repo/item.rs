@@ -1,6 +1,7 @@
 use anyhow::Result;
 use chrono::prelude::*;
-use sqlx::sqlite::SqliteConnection;
+
+use super::Conn;
 
 #[derive(Debug, Clone)]
 pub struct Item {
@@ -12,7 +13,8 @@ pub struct Item {
 }
 
 impl Item {
-    pub async fn all(conn: &mut SqliteConnection) -> Result<Vec<Item>> {
+    pub async fn all(pool: impl Conn<'_>) -> Result<Vec<Item>>
+    {
         let items = sqlx::query_as!(
             Item,
             r#"
@@ -20,13 +22,13 @@ impl Item {
             FROM items
             "#
         )
-        .fetch_all(conn)
+        .fetch_all(pool)
         .await?;
 
         Ok(items)
     }
 
-    pub async fn insert(conn: &mut SqliteConnection, title: &str, url: &str) -> Result<i64> {
+    pub async fn insert(conn: impl Conn<'_>, title: &str, url: &str) -> Result<i64> {
         let id = sqlx::query!(
             r#"
             INSERT INTO items (title, url)
