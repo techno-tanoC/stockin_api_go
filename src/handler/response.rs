@@ -1,6 +1,6 @@
 use axum::{
-  http::StatusCode,
-  prelude::*,
+    http::StatusCode,
+    prelude::*,
 };
 use serde::Serialize;
 

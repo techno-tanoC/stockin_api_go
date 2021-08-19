@@ -17,15 +17,15 @@ pub struct Item {
 }
 
 impl From<repo::Item> for Item {
-  fn from(item: repo::Item) -> Self {
-    Item {
-        id: item.id,
-        title: item.title,
-        url: item.url,
-        created_at: item.created_at,
-        updated_at: item.updated_at,
+    fn from(item: repo::Item) -> Self {
+        Item {
+            id: item.id,
+            title: item.title,
+            url: item.url,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+        }
     }
-  }
 }
 
 pub async fn index_item(state: extract::Extension<SharedState>) -> Result<Vec<Item>> {
