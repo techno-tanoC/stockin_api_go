@@ -13,8 +13,7 @@ pub struct Item {
 }
 
 impl Item {
-    pub async fn all(exe: impl Exe<'_>) -> Result<Vec<Item>>
-    {
+    pub async fn all(exe: impl Exe<'_>) -> Result<Vec<Item>> {
         let items = sqlx::query_as!(
             Item,
             r#"
