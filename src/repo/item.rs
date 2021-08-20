@@ -1,7 +1,7 @@
 use anyhow::Result;
 use chrono::prelude::*;
 
-use super::Conn;
+use super::Exe;
 
 #[derive(Debug, Clone)]
 pub struct Item {
@@ -13,7 +13,7 @@ pub struct Item {
 }
 
 impl Item {
-    pub async fn all(pool: impl Conn<'_>) -> Result<Vec<Item>>
+    pub async fn all(exe: impl Exe<'_>) -> Result<Vec<Item>>
     {
         let items = sqlx::query_as!(
             Item,
@@ -22,13 +22,13 @@ impl Item {
             FROM items
             "#
         )
-        .fetch_all(pool)
+        .fetch_all(exe)
         .await?;
 
         Ok(items)
     }
 
-    pub async fn insert(conn: impl Conn<'_>, title: &str, url: &str) -> Result<i64> {
+    pub async fn insert(exe: impl Exe<'_>, title: &str, url: &str) -> Result<i64> {
         let id = sqlx::query!(
             r#"
             INSERT INTO items (title, url)
@@ -37,7 +37,7 @@ impl Item {
             title,
             url
         )
-        .execute(conn)
+        .execute(exe)
         .await?
         .last_insert_rowid();
 
