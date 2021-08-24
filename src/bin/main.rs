@@ -1,5 +1,4 @@
 use anyhow::Result;
-use axum::prelude::*;
 use std::env;
 use std::net::SocketAddr;
 
@@ -9,10 +8,7 @@ use stockin_api::*;
 async fn main() -> Result<()> {
     let database_url = env::var("DATABASE_URL")?;
     let state = new_state(&database_url).await?;
-
-    let item_actions = get(handler::index_item).post(handler::create_item);
-    let app = route("/items", item_actions)
-        .layer(axum::AddExtensionLayer::new(state));
+    let app = build_app(state);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     axum::Server::bind(&addr)
