@@ -1,5 +1,8 @@
 use anyhow::Result;
-use axum::prelude::*;
+use axum::{
+    handler::*,
+    Router,
+};
 use std::env;
 use std::net::SocketAddr;
 
@@ -11,7 +14,7 @@ async fn main() -> Result<()> {
     let state = new_state(&database_url).await?;
 
     let item_actions = get(handler::index_item).post(handler::create_item);
-    let app = route("/items", item_actions)
+    let app = Router::new().route("/items", item_actions)
         .layer(axum::AddExtensionLayer::new(state));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
