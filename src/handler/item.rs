@@ -41,7 +41,7 @@ pub struct Params {
 
 pub async fn index_item(state: extract::Extension<SharedState>) -> Result<Vec<Item>> {
     let items = repo::Item::all(&state.pool).await.map_err(internal_error)?;
-    ok(items.into_iter().map(|i| i.into()).collect())
+    ok(items.into_iter().map(|i| i.into()).rev().collect())
 }
 
 pub async fn create_item(params: extract::Json<Params>, state: extract::Extension<SharedState>) -> Result<Item> {
