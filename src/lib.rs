@@ -21,10 +21,12 @@ pub async fn new_state(url: &str) -> Result<SharedState> {
 }
 
 pub fn build_app(state: SharedState) -> Router<BoxRoute> {
-    let item_actions = get(handler::index_item).post(handler::create_item);
+    let item_actions = Router::new()
+        .route("/", get(handler::index_item).post(handler::create_item))
+        .route("/:item_id", put(handler::update_item).delete(handler::delete_item));
 
     Router::new()
-        .route("/items", item_actions)
+        .nest("/items", item_actions)
         .layer(axum::AddExtensionLayer::new(state))
         .boxed()
 }

@@ -28,23 +28,37 @@ impl From<repo::Item> for Item {
     }
 }
 
+#[derive(Debug, Clone, Deserialize)]
+pub struct Id {
+    item_id: i64,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct Params {
+    title: String,
+    url: String,
+}
+
 pub async fn index_item(state: extract::Extension<SharedState>) -> Result<Vec<Item>> {
     let items = repo::Item::all(&state.pool).await.map_err(internal_error)?;
     ok(items.into_iter().map(|i| i.into()).collect())
 }
 
-#[derive(Debug, Clone, Deserialize)]
-pub struct NewItem {
-    title: String,
-    url: String,
+pub async fn create_item(params: extract::Json<Params>, state: extract::Extension<SharedState>) -> Result<Item> {
+    let mut conn = state.pool.acquire().await.map_err(internal_error)?;
+    let id = repo::Item::insert(&mut conn, &params.title, &params.url).await.map_err(internal_error)?;
+    let item = repo::Item::find(&mut conn, id).await.map_err(internal_error)?;
+    ok(item.into())
 }
 
-#[derive(Debug, Clone, Serialize)]
-pub struct Id {
-    id: i64,
+pub async fn update_item(id: extract::Path<Id>, params: extract::Json<Params>, state: extract::Extension<SharedState>) -> Result<Item> {
+    let mut conn = state.pool.acquire().await.map_err(internal_error)?;
+    let _ = repo::Item::update(&mut conn, id.item_id, &params.title, &params.url).await.map_err(internal_error)?;
+    let item = repo::Item::find(&mut conn, id.item_id).await.map_err(internal_error)?;
+    ok(item.into())
 }
 
-pub async fn create_item(new_item: extract::Json<NewItem>, state: extract::Extension<SharedState>) -> Result<Id> {
-    let id = repo::Item::insert(&state.pool, &new_item.title, &new_item.url).await.map_err(internal_error)?;
-    ok(Id { id })
+pub async fn delete_item(id: extract::Path<Id>, state: extract::Extension<SharedState>) -> Result<()> {
+    let _ = repo::Item::delete(&state.pool, id.item_id).await.map_err(internal_error)?;
+    ok(())
 }
