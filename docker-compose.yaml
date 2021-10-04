@@ -5,6 +5,5 @@ services:
     image: mysql:8
     environment:
       MYSQL_ROOT_PASSWORD: pass
-      MYSQL_DATABASE: dev
     ports:
       - "3306:3306"
