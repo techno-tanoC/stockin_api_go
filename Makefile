@@ -1,20 +1,16 @@
-SCHEMA_FILE ?= schema.sql
-DATABASE_FILE ?= stockin.sqlite3
-DATABASE_URL ?= sqlite://$(DATABASE_FILE)
+SCHEMA_FILE = schema.sql
+DATABASE_HOST = 0.0.0.0
 
-schema-diff:
-	sqlite3def -f $(SCHEMA_FILE) --dry-run $(DATABASE_FILE)
+diff:
+	cat $(SCHEMA_FILE) | mysqldef --host=$(DB_HOST) --user=root --password=pass dev --dry-run
 
-schema-apply:
-	sqlite3def -f $(SCHEMA_FILE) $(DATABASE_FILE)
+apply:
+	cat $(SCHEMA_FILE) | mysqldef --host=$(DB_HOST) --user=root --password=pass dev
 
-sqlite:
-	sqlite3 $(DATABASE_FILE)
-
-delete:
-	rm -f $(DATABASE_FILE)*
+mysql:
+	mysql --host=$(DATABASE_HOST) --user=root --password=pass dev
 
 seed:
 	cargo run --bin seed
 
-reset: delete schema-apply seed
+reset: schema-apply seed
