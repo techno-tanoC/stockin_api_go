@@ -30,7 +30,7 @@ impl From<repo::Item> for Item {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Id {
-    item_id: i64,
+    item_id: u64,
 }
 
 #[derive(Debug, Clone, Deserialize)]

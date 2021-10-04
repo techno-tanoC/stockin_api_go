@@ -6,17 +6,17 @@ use axum::{
     handler::*,
     routing::{BoxRoute, Router},
 };
-use sqlx::sqlite::SqlitePool;
+use sqlx::mysql::MySqlPool;
 use std::sync::Arc;
 
 pub struct State {
-    pub pool: SqlitePool,
+    pub pool: MySqlPool,
 }
 
 pub type SharedState = Arc<State>;
 
 pub async fn new_state(url: &str) -> Result<SharedState> {
-    let pool = SqlitePool::connect(url).await?;
+    let pool = MySqlPool::connect(url).await?;
     Ok(Arc::new(State { pool }))
 }
 
