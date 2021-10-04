@@ -4,6 +4,9 @@ DATABASE_HOST = 0.0.0.0
 seed:
 	cargo run --bin seed
 
+dump:
+	cargo run --bin dump
+
 diff:
 	cat $(SCHEMA_FILE) | mysqldef --host=$(DB_HOST) --user=root --password=pass dev --dry-run
 
