@@ -1,20 +1,27 @@
-SCHEMA_FILE ?= schema.sql
-DATABASE_FILE ?= stockin.sqlite3
-DATABASE_URL ?= sqlite://$(DATABASE_FILE)
-
-schema-diff:
-	sqlite3def -f $(SCHEMA_FILE) --dry-run $(DATABASE_FILE)
-
-schema-apply:
-	sqlite3def -f $(SCHEMA_FILE) $(DATABASE_FILE)
-
-sqlite:
-	sqlite3 $(DATABASE_FILE)
-
-delete:
-	rm -f $(DATABASE_FILE)*
+SCHEMA_FILE = schema.sql
+DATABASE_HOST = 0.0.0.0
 
 seed:
 	cargo run --bin seed
 
-reset: delete schema-apply seed
+diff:
+	cat $(SCHEMA_FILE) | mysqldef --host=$(DB_HOST) --user=root --password=pass dev --dry-run
+
+apply:
+	cat $(SCHEMA_FILE) | mysqldef --host=$(DB_HOST) --user=root --password=pass dev
+
+apply-test:
+	cat $(SCHEMA_FILE) | mysqldef --host=$(DB_HOST) --user=root --password=pass test
+
+mysql:
+	mysql --host=$(DATABASE_HOST) --user=root --password=pass dev
+
+create:
+	echo "CREATE DATABASE IF NOT EXISTS dev" | mysql --host=$(DATABASE_HOST) --user=root --password=pass
+	echo "CREATE DATABASE IF NOT EXISTS test" | mysql --host=$(DATABASE_HOST) --user=root --password=pass
+
+drop:
+	echo "DROP DATABASE IF EXISTS dev" | mysql --host=$(DATABASE_HOST) --user=root --password=pass
+	echo "DROP DATABASE IF EXISTS test" | mysql --host=$(DATABASE_HOST) --user=root --password=pass
+
+reset: drop create apply apply-test seed

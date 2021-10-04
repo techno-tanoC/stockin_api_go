@@ -13,13 +13,13 @@ pub struct Item {
 }
 
 impl Item {
-    pub async fn find(exe: impl Exe<'_>, id: i64) -> Result<Item> {
+    pub async fn find(exe: impl Exe<'_>, id: u64) -> Result<Item> {
         let item = sqlx::query_as!(
             Item,
             r#"
             SELECT *
             FROM items
-            WHERE id = ?1
+            WHERE id = ?
             "#,
             id
         )
@@ -43,28 +43,28 @@ impl Item {
         Ok(items)
     }
 
-    pub async fn insert(exe: impl Exe<'_>, title: &str, url: &str) -> Result<i64> {
+    pub async fn insert(exe: impl Exe<'_>, title: &str, url: &str) -> Result<u64> {
         let id = sqlx::query!(
             r#"
             INSERT INTO items (title, url)
-            VALUES (?1, ?2)
+            VALUES (?, ?)
             "#,
             title,
             url
         )
         .execute(exe)
         .await?
-        .last_insert_rowid();
+        .last_insert_id();
 
         Ok(id)
     }
 
-    pub async fn update(exe: impl Exe<'_>, id: i64, title: &str, url: &str) -> Result<()> {
+    pub async fn update(exe: impl Exe<'_>, id: u64, title: &str, url: &str) -> Result<()> {
         let _ = sqlx::query!(
             r#"
             UPDATE items
-            SET title = ?1, url = ?2, updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?3
+            SET title = ?, url = ?
+            WHERE id = ?
             "#,
             title,
             url,
@@ -76,11 +76,11 @@ impl Item {
         Ok(())
     }
 
-    pub async fn delete(exe: impl Exe<'_>, id: i64) -> Result<()> {
+    pub async fn delete(exe: impl Exe<'_>, id: u64) -> Result<()> {
         let _ = sqlx::query!(
             r#"
             DELETE FROM items
-            WHERE id = ?1
+            WHERE id = ?
             "#,
             id
         )
