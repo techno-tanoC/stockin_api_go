@@ -29,6 +29,22 @@ impl From<repo::Item> for Item {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+pub struct Range {
+    #[serde(default = "default_before")]
+    before: u64,
+    #[serde(default = "default_size")]
+    size: u64,
+}
+
+fn default_before() -> u64 {
+    std::u64::MAX
+}
+
+fn default_size() -> u64 {
+    5
+}
+
+#[derive(Debug, Clone, Deserialize)]
 pub struct Id {
     item_id: u64,
 }
@@ -39,9 +55,9 @@ pub struct Params {
     url: String,
 }
 
-pub async fn index(state: extract::Extension<SharedState>) -> Result<Vec<Item>> {
-    let items = repo::Item::all(&state.pool).await.map_err(internal_error)?;
-    ok(items.into_iter().map(|i| i.into()).rev().collect())
+pub async fn get(range: extract::Query<Range>, state: extract::Extension<SharedState>) -> Result<Vec<Item>> {
+    let items = repo::Item::find_by_range(&state.pool, range.before, range.size).await.map_err(internal_error)?;
+    ok(items.into_iter().map(|i| i.into()).collect())
 }
 
 pub async fn create(params: extract::Json<Params>, state: extract::Extension<SharedState>) -> Result<Item> {

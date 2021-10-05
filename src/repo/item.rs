@@ -43,6 +43,25 @@ impl Item {
         Ok(items)
     }
 
+    pub async fn find_by_range(exe: impl Exe<'_>, before: u64, count: u64) -> Result<Vec<Item>> {
+        let items = sqlx::query_as!(
+            Item,
+            r#"
+            SELECT *
+            FROM items
+            WHERE id < ?
+            ORDER BY id DESC
+            LIMIT ?
+            "#,
+            before,
+            count
+        )
+        .fetch_all(exe)
+        .await?;
+
+        Ok(items)
+    }
+
     pub async fn insert(exe: impl Exe<'_>, title: &str, url: &str) -> Result<u64> {
         let id = sqlx::query!(
             r#"
