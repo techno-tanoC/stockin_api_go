@@ -22,8 +22,8 @@ pub async fn new_state(url: &str) -> Result<SharedState> {
 
 pub fn build_app(state: SharedState) -> Router<BoxRoute> {
     let item_actions = Router::new()
-        .route("/", get(handler::index_item).post(handler::create_item))
-        .route("/:item_id", put(handler::update_item).delete(handler::delete_item));
+        .route("/", get(handler::index).post(handler::create))
+        .route("/:item_id", put(handler::update).delete(handler::delete));
 
     Router::new()
         .nest("/items", item_actions)
