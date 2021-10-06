@@ -28,5 +28,6 @@ pub fn build_app(state: SharedState) -> Router<BoxRoute> {
     Router::new()
         .nest("/items", item_actions)
         .layer(axum::AddExtensionLayer::new(state))
+        .layer(tower_http::trace::TraceLayer::new_for_http())
         .boxed()
 }
