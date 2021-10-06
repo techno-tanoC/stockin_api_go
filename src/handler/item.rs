@@ -56,6 +56,10 @@ pub struct Params {
 }
 
 pub async fn get(range: extract::Query<Range>, state: extract::Extension<SharedState>) -> Result<Vec<Item>> {
+    if range.size > 50 {
+        Err(client_error(()))?
+    }
+
     let items = repo::Item::find_by_range(&state.pool, range.before, range.size).await.map_err(server_error)?;
     ok(items.into_iter().map(|i| i.into()).collect())
 }
