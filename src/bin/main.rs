@@ -6,6 +6,8 @@ use stockin_api::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    env_logger::init();
+
     let database_url = env::var("DATABASE_URL")?;
     let port = env::var("PORT").unwrap_or("3000".to_string()).parse()?;
 
