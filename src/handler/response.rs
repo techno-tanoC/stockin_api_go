@@ -20,6 +20,6 @@ pub fn ok<T: Serialize>(data: T) -> Result<T> {
     Ok((StatusCode::OK, response::Json(Success{ data })))
 }
 
-pub fn internal_error<E>(_: E) -> (StatusCode, response::Json<Message>) {
+pub fn server_error<E>(_: E) -> (StatusCode, response::Json<Message>) {
     (StatusCode::INTERNAL_SERVER_ERROR, response::Json(Message{ message: "internal server error".to_string()}))
 }
