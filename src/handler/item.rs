@@ -55,6 +55,11 @@ pub struct Params {
     url: String,
 }
 
+pub async fn find(id: extract::Path<Id>, state: extract::Extension<SharedState>) -> Result<Item> {
+    let item = repo::Item::find(&state.pool, id.item_id).await.map_err(server_error)?;
+    ok(item.into())
+}
+
 pub async fn get(range: extract::Query<Range>, state: extract::Extension<SharedState>) -> Result<Vec<Item>> {
     if range.size > 50 {
         Err(client_error(()))?
