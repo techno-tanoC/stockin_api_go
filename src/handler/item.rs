@@ -55,9 +55,9 @@ pub struct Params {
     url: String,
 }
 
-pub async fn find(id: extract::Path<Id>, state: extract::Extension<SharedState>) -> Result<Item> {
-    let item = repo::Item::find(&state.pool, id.item_id).await.map_err(server_error)?;
-    ok(item.into())
+pub async fn find(id: extract::Path<Id>, state: extract::Extension<SharedState>) -> Result<Option<Item>> {
+    let option = repo::Item::find(&state.pool, id.item_id).await.map_err(server_error)?;
+    ok(option.map(|i| i.into()))
 }
 
 pub async fn find_by_range(range: extract::Query<Range>, state: extract::Extension<SharedState>) -> Result<Vec<Item>> {
@@ -69,18 +69,18 @@ pub async fn find_by_range(range: extract::Query<Range>, state: extract::Extensi
     ok(items.into_iter().map(|i| i.into()).collect())
 }
 
-pub async fn create(params: extract::Json<Params>, state: extract::Extension<SharedState>) -> Result<Item> {
+pub async fn create(params: extract::Json<Params>, state: extract::Extension<SharedState>) -> Result<Option<Item>> {
     let mut conn = state.pool.acquire().await.map_err(server_error)?;
     let id = repo::Item::insert(&mut conn, &params.title, &params.url).await.map_err(server_error)?;
-    let item = repo::Item::find(&mut conn, id).await.map_err(server_error)?;
-    ok(item.into())
+    let option = repo::Item::find(&mut conn, id).await.map_err(server_error)?;
+    ok(option.map(|i| i.into()))
 }
 
-pub async fn update(id: extract::Path<Id>, params: extract::Json<Params>, state: extract::Extension<SharedState>) -> Result<Item> {
+pub async fn update(id: extract::Path<Id>, params: extract::Json<Params>, state: extract::Extension<SharedState>) -> Result<Option<Item>> {
     let mut conn = state.pool.acquire().await.map_err(server_error)?;
     let _ = repo::Item::update(&mut conn, id.item_id, &params.title, &params.url).await.map_err(server_error)?;
-    let item = repo::Item::find(&mut conn, id.item_id).await.map_err(server_error)?;
-    ok(item.into())
+    let option = repo::Item::find(&mut conn, id.item_id).await.map_err(server_error)?;
+    ok(option.map(|i| i.into()))
 }
 
 pub async fn delete(id: extract::Path<Id>, state: extract::Extension<SharedState>) -> Result<()> {

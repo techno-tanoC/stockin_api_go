@@ -13,7 +13,7 @@ pub struct Item {
 }
 
 impl Item {
-    pub async fn find(exe: impl Exe<'_>, id: u64) -> Result<Item> {
+    pub async fn find(exe: impl Exe<'_>, id: u64) -> Result<Option<Item>> {
         let item = sqlx::query_as!(
             Item,
             r#"
@@ -23,7 +23,7 @@ impl Item {
             "#,
             id
         )
-        .fetch_one(exe)
+        .fetch_optional(exe)
         .await?;
 
         Ok(item)
