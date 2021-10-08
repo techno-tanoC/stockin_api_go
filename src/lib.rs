@@ -20,7 +20,12 @@ pub async fn new_state(url: &str) -> Result<SharedState> {
     Ok(Arc::new(State { pool }))
 }
 
-pub fn build_app(state: SharedState) -> Router<BoxRoute> {
+#[derive(Debug, Clone)]
+pub struct Bearer {
+    token: String,
+}
+
+pub fn build_app(state: SharedState, token: String) -> Router<BoxRoute> {
     let item_actions = Router::new()
         .route("/", get(handler::find_by_range).post(handler::create))
         .route("/:item_id", get(handler::find).put(handler::update).delete(handler::delete));
@@ -28,6 +33,7 @@ pub fn build_app(state: SharedState) -> Router<BoxRoute> {
     Router::new()
         .nest("/items", item_actions)
         .layer(axum::AddExtensionLayer::new(state))
+        .layer(axum::AddExtensionLayer::new(Bearer { token }))
         .layer(tower_http::trace::TraceLayer::new_for_http())
         .boxed()
 }

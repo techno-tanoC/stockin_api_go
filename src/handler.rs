@@ -1,3 +1,4 @@
+mod auth;
 mod item;
 mod response;
 
