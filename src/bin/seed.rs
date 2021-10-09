@@ -16,6 +16,7 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
+#[rustfmt::skip]
 fn items() -> Vec<(&'static str, &'static str)> {
     vec![
         (
