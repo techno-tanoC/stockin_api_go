@@ -1,11 +1,13 @@
 SCHEMA_FILE = schema.sql
 DATABASE_HOST = 0.0.0.0
 
-fmt:
+lint:
 	cargo fmt --all -- --check
-
-clippy:
 	cargo clippy --all-targets --all-features -- -D warnings
+
+fmt:
+	cargo fmt --all
+	cargo clippy --all-targets --all-features --fix --allow-dirty
 
 seed:
 	cargo run --bin seed
