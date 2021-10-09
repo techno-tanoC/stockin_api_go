@@ -9,30 +9,28 @@ use crate::Bearer;
 #[derive(Debug, Clone)]
 pub struct UserId;
 
-const UNAUTHORIZED: (StatusCode, &'static str) = (StatusCode::UNAUTHORIZED, "Unauthorized");
-
 #[async_trait]
 impl<B> FromRequest<B> for UserId
 where B: Send,
 {
-    type Rejection = (StatusCode, &'static str);
+    type Rejection = StatusCode;
 
     async fn from_request(req: &mut RequestParts<B>) -> Result<Self, Self::Rejection> {
         let bearer = Extension::<Bearer>::from_request(req).await.expect("`Bearer` extension missing");
 
-        let headers = req.headers().expect("other extractor taken headers");
+        let token_option = req
+            .headers()
+            .expect("other extractor taken headers")
+            .get(header::AUTHORIZATION)
+            .and_then(|value| value.to_str().ok())
+            .map(|value| value.trim_start_matches("Bearer "));
 
-        let value = headers.get(header::AUTHORIZATION)
-            .ok_or(UNAUTHORIZED)?
-            .to_str()
-            .map_err(|_| UNAUTHORIZED)?
-            .to_string();
-        let token = value.trim_start_matches("Bearer ");
-
-        if token == &bearer.token {
-            Ok(UserId)
-        } else {
-            Err(UNAUTHORIZED)
+        if let Some(token) = token_option {
+            if token == bearer.token {
+                return Ok(Self)
+            }
         }
+
+        Err(StatusCode::UNAUTHORIZED)
     }
 }
