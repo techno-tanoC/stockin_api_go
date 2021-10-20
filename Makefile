@@ -1,6 +1,9 @@
 SCHEMA_FILE = schema.sql
 DATABASE_HOST = 0.0.0.0
 
+start:
+	cargo watch -x run
+
 lint:
 	cargo fmt --all -- --check
 	cargo clippy --all-targets --all-features -- -D warnings
