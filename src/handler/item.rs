@@ -13,6 +13,7 @@ pub struct Item {
     id: i64,
     title: String,
     url: String,
+    is_archived: bool,
     created_at: NaiveDateTime,
     updated_at: NaiveDateTime,
 }
@@ -23,6 +24,7 @@ impl From<repo::Item> for Item {
             id: item.id,
             title: item.title,
             url: item.url,
+            is_archived: item.is_archived,
             created_at: item.created_at,
             updated_at: item.updated_at,
         }
