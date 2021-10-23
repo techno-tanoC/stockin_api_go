@@ -96,6 +96,22 @@ impl Item {
         Ok(())
     }
 
+    pub async fn update_is_archived(exe: impl Exe<'_>, id: u64, is_archived: bool) -> Result<()> {
+        let _ = sqlx::query!(
+            r#"
+            UPDATE items
+            SET is_archived = ?
+            WHERE id = ?
+            "#,
+            is_archived,
+            id
+        )
+        .execute(exe)
+        .await?;
+
+        Ok(())
+    }
+
     pub async fn delete(exe: impl Exe<'_>, id: u64) -> Result<()> {
         let _ = sqlx::query!(
             r#"

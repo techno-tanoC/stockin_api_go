@@ -86,6 +86,20 @@ pub async fn update(id: extract::Path<Id>, params: extract::Json<Params>, state:
     ok(option.map(|i| i.into()))
 }
 
+pub async fn archive(id: extract::Path<Id>, state: extract::Extension<SharedState>, _: UserId) -> Result<Option<Item>> {
+    let mut conn = state.pool.acquire().await.map_err(server_error)?;
+    let _ = repo::Item::update_is_archived(&state.pool, id.item_id, true).await.map_err(server_error)?;
+    let option = repo::Item::find(&mut conn, id.item_id).await.map_err(server_error)?;
+    ok(option.map(|i| i.into()))
+}
+
+pub async fn unarchive(id: extract::Path<Id>, state: extract::Extension<SharedState>, _: UserId) -> Result<Option<Item>> {
+    let mut conn = state.pool.acquire().await.map_err(server_error)?;
+    let _ = repo::Item::update_is_archived(&state.pool, id.item_id, false).await.map_err(server_error)?;
+    let option = repo::Item::find(&mut conn, id.item_id).await.map_err(server_error)?;
+    ok(option.map(|i| i.into()))
+}
+
 pub async fn delete(id: extract::Path<Id>, state: extract::Extension<SharedState>, _: UserId) -> Result<()> {
     let _ = repo::Item::delete(&state.pool, id.item_id).await.map_err(server_error)?;
     ok(())
