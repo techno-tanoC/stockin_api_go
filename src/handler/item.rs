@@ -44,7 +44,7 @@ fn default_before() -> u64 {
 }
 
 fn default_size() -> u64 {
-    5
+    50
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -64,7 +64,7 @@ pub async fn find(id: extract::Path<Id>, state: extract::Extension<SharedState>,
 }
 
 pub async fn find_by_range(range: extract::Query<Range>, state: extract::Extension<SharedState>, _: UserId) -> Result<Vec<Item>> {
-    if range.size > 50 {
+    if range.size > 100 {
         Err(client_error(()))?
     }
 
