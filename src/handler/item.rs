@@ -13,6 +13,7 @@ pub struct Item {
     id: i64,
     title: String,
     url: String,
+    is_archived: bool,
     created_at: NaiveDateTime,
     updated_at: NaiveDateTime,
 }
@@ -23,6 +24,7 @@ impl From<repo::Item> for Item {
             id: item.id,
             title: item.title,
             url: item.url,
+            is_archived: item.is_archived,
             created_at: item.created_at,
             updated_at: item.updated_at,
         }
@@ -80,6 +82,20 @@ pub async fn create(params: extract::Json<Params>, state: extract::Extension<Sha
 pub async fn update(id: extract::Path<Id>, params: extract::Json<Params>, state: extract::Extension<SharedState>, _: UserId) -> Result<Option<Item>> {
     let mut conn = state.pool.acquire().await.map_err(server_error)?;
     let _ = repo::Item::update(&mut conn, id.item_id, &params.title, &params.url).await.map_err(server_error)?;
+    let option = repo::Item::find(&mut conn, id.item_id).await.map_err(server_error)?;
+    ok(option.map(|i| i.into()))
+}
+
+pub async fn archive(id: extract::Path<Id>, state: extract::Extension<SharedState>, _: UserId) -> Result<Option<Item>> {
+    let mut conn = state.pool.acquire().await.map_err(server_error)?;
+    let _ = repo::Item::update_is_archived(&state.pool, id.item_id, true).await.map_err(server_error)?;
+    let option = repo::Item::find(&mut conn, id.item_id).await.map_err(server_error)?;
+    ok(option.map(|i| i.into()))
+}
+
+pub async fn unarchive(id: extract::Path<Id>, state: extract::Extension<SharedState>, _: UserId) -> Result<Option<Item>> {
+    let mut conn = state.pool.acquire().await.map_err(server_error)?;
+    let _ = repo::Item::update_is_archived(&state.pool, id.item_id, false).await.map_err(server_error)?;
     let option = repo::Item::find(&mut conn, id.item_id).await.map_err(server_error)?;
     ok(option.map(|i| i.into()))
 }

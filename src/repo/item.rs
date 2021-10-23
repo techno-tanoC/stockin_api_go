@@ -8,6 +8,7 @@ pub struct Item {
     pub id: i64,
     pub title: String,
     pub url: String,
+    pub is_archived: bool,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
@@ -17,7 +18,7 @@ impl Item {
         let item = sqlx::query_as!(
             Item,
             r#"
-            SELECT *
+            SELECT id, title, url, is_archived as "is_archived: _", created_at, updated_at
             FROM items
             WHERE id = ?
             "#,
@@ -33,7 +34,7 @@ impl Item {
         let items = sqlx::query_as!(
             Item,
             r#"
-            SELECT *
+            SELECT id, title, url, is_archived as "is_archived: _", created_at, updated_at
             FROM items
             "#
         )
@@ -47,7 +48,7 @@ impl Item {
         let items = sqlx::query_as!(
             Item,
             r#"
-            SELECT *
+            SELECT id, title, url, is_archived as "is_archived: _", created_at, updated_at
             FROM items
             WHERE id < ?
             ORDER BY id DESC
@@ -87,6 +88,22 @@ impl Item {
             "#,
             title,
             url,
+            id
+        )
+        .execute(exe)
+        .await?;
+
+        Ok(())
+    }
+
+    pub async fn update_is_archived(exe: impl Exe<'_>, id: u64, is_archived: bool) -> Result<()> {
+        let _ = sqlx::query!(
+            r#"
+            UPDATE items
+            SET is_archived = ?
+            WHERE id = ?
+            "#,
+            is_archived,
             id
         )
         .execute(exe)

@@ -28,7 +28,9 @@ pub struct Bearer {
 pub fn build_app(state: SharedState, token: String) -> Router<BoxRoute> {
     let item_actions = Router::new()
         .route("/", get(handler::find_by_range).post(handler::create))
-        .route("/:item_id", get(handler::find).put(handler::update).delete(handler::delete));
+        .route("/:item_id", get(handler::find).patch(handler::update).delete(handler::delete))
+        .route("/:item_id/archive", patch(handler::archive))
+        .route("/:item_id/unarchive", patch(handler::unarchive));
 
     Router::new()
         .nest("/items", item_actions)
