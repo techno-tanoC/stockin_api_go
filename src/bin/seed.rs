@@ -9,8 +9,13 @@ async fn main() -> Result<()> {
     let database_url = env::var("DATABASE_URL")?;
     let pool = MySqlPool::connect(&database_url).await?;
 
-    for item in items() {
-        repo::Item::insert(&pool, item.0, item.1).await?;
+    let mut count = 0;
+    for _ in 0..30 {
+        for item in items() {
+            count += 1;
+            let count = count;
+            repo::Item::insert(&pool, &format!("{}: {}", count, item.0), item.1).await?;
+        }
     }
 
     Ok(())
