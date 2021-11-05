@@ -16,7 +16,7 @@ pub struct State {
 pub type SharedState = Arc<State>;
 
 pub async fn new_state(url: &str) -> Result<SharedState> {
-    let pool = MySqlPool::connect(url).await?;
+    let pool = MySqlPool::connect_lazy(url)?;
     Ok(Arc::new(State { pool }))
 }
 
