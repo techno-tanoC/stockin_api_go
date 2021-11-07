@@ -2,6 +2,8 @@ name: CI
 
 on:
   push:
+    branches:
+      - main
   pull_request:
 
 jobs:
@@ -39,7 +41,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-      - name: Test
+      - name: Run tests
         uses: actions-rs/cargo@v1
         with:
           command: test
