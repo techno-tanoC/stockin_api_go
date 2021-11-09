@@ -1,0 +1,313 @@
+{
+  "db": "MySQL",
+  "027facb485ab08c49d92f281191cb01c84dca63d53773d199e388cc170075f23": {
+    "query": "\n            SELECT id, title, url, is_archived as \"is_archived: _\", created_at, updated_at\n            FROM items\n            WHERE id = ?\n            ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": {
+            "type": "LongLong",
+            "flags": {
+              "bits": 515
+            },
+            "char_set": 63,
+            "max_size": 20
+          }
+        },
+        {
+          "ordinal": 1,
+          "name": "title",
+          "type_info": {
+            "type": "Blob",
+            "flags": {
+              "bits": 4113
+            },
+            "char_set": 224,
+            "max_size": 262140
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "url",
+          "type_info": {
+            "type": "Blob",
+            "flags": {
+              "bits": 4113
+            },
+            "char_set": 224,
+            "max_size": 262140
+          }
+        },
+        {
+          "ordinal": 3,
+          "name": "is_archived: _",
+          "type_info": {
+            "type": "Tiny",
+            "flags": {
+              "bits": 1
+            },
+            "char_set": 63,
+            "max_size": 1
+          }
+        },
+        {
+          "ordinal": 4,
+          "name": "created_at",
+          "type_info": {
+            "type": "Datetime",
+            "flags": {
+              "bits": 129
+            },
+            "char_set": 63,
+            "max_size": 19
+          }
+        },
+        {
+          "ordinal": 5,
+          "name": "updated_at",
+          "type_info": {
+            "type": "Datetime",
+            "flags": {
+              "bits": 129
+            },
+            "char_set": 63,
+            "max_size": 19
+          }
+        }
+      ],
+      "parameters": {
+        "Right": 1
+      },
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "267a32a273eca51d0121b4a5d2afda694c25e0c403c4723e1d454d3db0f2934d": {
+    "query": "\n            INSERT INTO items (title, url)\n            VALUES (?, ?)\n            ",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 2
+      },
+      "nullable": []
+    }
+  },
+  "b955e36b07ee11359773b7d03a612436fbed226b5a73d741ac20110557876a55": {
+    "query": "\n            SELECT id, title, url, is_archived as \"is_archived: _\", created_at, updated_at\n            FROM items\n            WHERE id < ?\n            ORDER BY id DESC\n            LIMIT ?\n            ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": {
+            "type": "LongLong",
+            "flags": {
+              "bits": 515
+            },
+            "char_set": 63,
+            "max_size": 20
+          }
+        },
+        {
+          "ordinal": 1,
+          "name": "title",
+          "type_info": {
+            "type": "Blob",
+            "flags": {
+              "bits": 4113
+            },
+            "char_set": 224,
+            "max_size": 262140
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "url",
+          "type_info": {
+            "type": "Blob",
+            "flags": {
+              "bits": 4113
+            },
+            "char_set": 224,
+            "max_size": 262140
+          }
+        },
+        {
+          "ordinal": 3,
+          "name": "is_archived: _",
+          "type_info": {
+            "type": "Tiny",
+            "flags": {
+              "bits": 1
+            },
+            "char_set": 63,
+            "max_size": 1
+          }
+        },
+        {
+          "ordinal": 4,
+          "name": "created_at",
+          "type_info": {
+            "type": "Datetime",
+            "flags": {
+              "bits": 129
+            },
+            "char_set": 63,
+            "max_size": 19
+          }
+        },
+        {
+          "ordinal": 5,
+          "name": "updated_at",
+          "type_info": {
+            "type": "Datetime",
+            "flags": {
+              "bits": 129
+            },
+            "char_set": 63,
+            "max_size": 19
+          }
+        }
+      ],
+      "parameters": {
+        "Right": 2
+      },
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "d3e5857c621d093afc0dd728ed78207504c5c625af73bfe72316a5e9bb49800b": {
+    "query": "\n            DELETE FROM items\n            WHERE id = ?\n            ",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 1
+      },
+      "nullable": []
+    }
+  },
+  "db8761f521b3905175dfc61560d5e2dec1b518562cfce749520bf332426c5dbc": {
+    "query": "\n            UPDATE items\n            SET title = ?, url = ?\n            WHERE id = ?\n            ",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 3
+      },
+      "nullable": []
+    }
+  },
+  "f01b4f585cb2232e3b31af3a90bac42fc3dd9a433f4d05028aacc79aef2e5d0c": {
+    "query": "\n            UPDATE items\n            SET is_archived = ?\n            WHERE id = ?\n            ",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 2
+      },
+      "nullable": []
+    }
+  },
+  "f67aa727b1a1aa9fe3337d7fc0085eac45ed889b98bba88ad8f77f8688764951": {
+    "query": "\n            SELECT id, title, url, is_archived as \"is_archived: _\", created_at, updated_at\n            FROM items\n            ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": {
+            "type": "LongLong",
+            "flags": {
+              "bits": 515
+            },
+            "char_set": 63,
+            "max_size": 20
+          }
+        },
+        {
+          "ordinal": 1,
+          "name": "title",
+          "type_info": {
+            "type": "Blob",
+            "flags": {
+              "bits": 4113
+            },
+            "char_set": 224,
+            "max_size": 262140
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "url",
+          "type_info": {
+            "type": "Blob",
+            "flags": {
+              "bits": 4113
+            },
+            "char_set": 224,
+            "max_size": 262140
+          }
+        },
+        {
+          "ordinal": 3,
+          "name": "is_archived: _",
+          "type_info": {
+            "type": "Tiny",
+            "flags": {
+              "bits": 1
+            },
+            "char_set": 63,
+            "max_size": 1
+          }
+        },
+        {
+          "ordinal": 4,
+          "name": "created_at",
+          "type_info": {
+            "type": "Datetime",
+            "flags": {
+              "bits": 129
+            },
+            "char_set": 63,
+            "max_size": 19
+          }
+        },
+        {
+          "ordinal": 5,
+          "name": "updated_at",
+          "type_info": {
+            "type": "Datetime",
+            "flags": {
+              "bits": 129
+            },
+            "char_set": 63,
+            "max_size": 19
+          }
+        }
+      ],
+      "parameters": {
+        "Right": 0
+      },
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  }
+}
