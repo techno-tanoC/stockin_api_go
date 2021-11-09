@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: docker/deploy/Dockerfile
+    command: ["cargo", "watch", "-x", "test"]
+    init: true
+    environment:
+      DATABASE_URL: mysql://root:pass@db:3306/dev
+      AUTH_TOKEN: debug
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/work
+      - target:/work/target
+
+volumes:
+  target:
