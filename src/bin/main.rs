@@ -13,6 +13,8 @@ async fn main() -> Result<()> {
     let database_url = env::var("DATABASE_URL")?;
     let port = env::var("PORT").unwrap_or("3000".to_string()).parse()?;
 
+    check_port(&database_url).await?;
+
     let state = new_state(&database_url).await?;
     let app = build_app(state, token);
 

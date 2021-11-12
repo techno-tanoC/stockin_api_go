@@ -19,6 +19,20 @@ pub async fn new_state(url: &str) -> Result<SharedState> {
     Ok(Arc::new(State { pool }))
 }
 
+pub async fn check_port(url: &str) -> Result<()> {
+    let port = url::Url::parse(url)?.port().ok_or_else(|| anyhow::anyhow!("port not found"))?;
+    for i in 0..10 {
+        let result = tokio::net::TcpStream::connect(format!("localhost:{}", port)).await;
+        if result.is_ok() {
+            return Ok(());
+        }
+
+        tokio::time::sleep(std::time::Duration::from_millis(10 * 2_u64.pow(i % 9))).await;
+    }
+
+    Err(anyhow::anyhow!("Backoff limit exceeded"))
+}
+
 #[derive(Debug, Clone)]
 pub struct Bearer {
     token: String,
