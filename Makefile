@@ -1,5 +1,5 @@
 SCHEMA_FILE = schema.sql
-DATABASE_HOST = 0.0.0.0
+DATABASE_HOST ?= 0.0.0.0
 
 start:
 	cargo watch -x run
@@ -31,13 +31,13 @@ create-test:
 	echo "CREATE DATABASE IF NOT EXISTS test" | mysql --host=$(DATABASE_HOST) --user=root --password=pass
 
 diff:
-	cat $(SCHEMA_FILE) | mysqldef --host=$(DB_HOST) --user=root --password=pass dev --dry-run
+	cat $(SCHEMA_FILE) | mysqldef --host=$(DATABASE_HOST) --user=root --password=pass dev --dry-run
 
 apply:
-	cat $(SCHEMA_FILE) | mysqldef --host=$(DB_HOST) --user=root --password=pass dev
+	cat $(SCHEMA_FILE) | mysqldef --host=$(DATABASE_HOST) --user=root --password=pass dev
 
 apply-test:
-	cat $(SCHEMA_FILE) | mysqldef --host=$(DB_HOST) --user=root --password=pass test
+	cat $(SCHEMA_FILE) | mysqldef --host=$(DATABASE_HOST) --user=root --password=pass test
 
 drop:
 	echo "DROP DATABASE IF EXISTS dev" | mysql --host=$(DATABASE_HOST) --user=root --password=pass
