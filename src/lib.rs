@@ -29,8 +29,12 @@ pub fn build_app(state: SharedState, token: String) -> Router {
         .route("/:item_id/archive", patch(handler::archive))
         .route("/:item_id/unarchive", patch(handler::unarchive));
 
+    let title_actions = Router::new()
+        .route("/query", post(handler::query));
+
     Router::new()
         .nest("/items", item_actions)
+        .nest("/title", title_actions)
         .layer(axum::AddExtensionLayer::new(state))
         .layer(axum::AddExtensionLayer::new(Bearer { token }))
         .layer(tower_http::trace::TraceLayer::new_for_http())
