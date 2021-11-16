@@ -2,10 +2,7 @@ pub mod handler;
 pub mod repo;
 
 use anyhow::Result;
-use axum::{
-    handler::*,
-    routing::{BoxRoute, Router},
-};
+use axum::routing::*;
 use sqlx::mysql::MySqlPool;
 use std::sync::Arc;
 
@@ -25,7 +22,7 @@ pub struct Bearer {
     token: String,
 }
 
-pub fn build_app(state: SharedState, token: String) -> Router<BoxRoute> {
+pub fn build_app(state: SharedState, token: String) -> Router {
     let item_actions = Router::new()
         .route("/", get(handler::find_by_range).post(handler::create))
         .route("/:item_id", get(handler::find).put(handler::update).delete(handler::delete))
@@ -37,5 +34,4 @@ pub fn build_app(state: SharedState, token: String) -> Router<BoxRoute> {
         .layer(axum::AddExtensionLayer::new(state))
         .layer(axum::AddExtensionLayer::new(Bearer { token }))
         .layer(tower_http::trace::TraceLayer::new_for_http())
-        .boxed()
 }
