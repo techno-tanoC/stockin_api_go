@@ -1,5 +1,6 @@
 use axum::extract;
 use serde::{Deserialize, Serialize};
+use std::time::Duration;
 
 use crate::handler::response::*;
 use crate::handler::auth::UserId;
@@ -25,7 +26,13 @@ pub async fn query(url: extract::Json<Url>, _: UserId) -> Result<Option<Title>> 
     url.validate().map_err(client_error)?;
 
     async fn fetch_html(u: &str) -> anyhow::Result<String> {
-        let html = reqwest::get(u)
+        let client = reqwest::Client::builder()
+            .timeout(Duration::from_secs(3))
+            .connect_timeout(Duration::from_secs(3))
+            .build()?;
+
+        let html = client.get(u)
+            .send()
             .await?
             .text()
             .await?;
