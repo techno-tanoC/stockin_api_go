@@ -61,14 +61,14 @@ pub struct Params {
 impl Params {
     fn validate(&self) -> anyhow::Result<()> {
         if self.title.len() > 1024 {
-            Err(anyhow::anyhow!("title is too long"))?;
+            Err(anyhow::anyhow!("title length is over 1024"))?;
         }
 
         if self.url.len() > 4096 {
-            Err(anyhow::anyhow!("url is too long"))?;
+            Err(anyhow::anyhow!("url length is over 4096"))?;
         }
 
-        url::Url::parse(&self.url)?;
+        url::Url::parse(&self.url).map_err(|_| anyhow::anyhow!("url is invalid"))?;
 
         Ok(())
     }
@@ -81,7 +81,7 @@ pub async fn find(id: extract::Path<Id>, state: extract::Extension<SharedState>,
 
 pub async fn find_by_range(range: extract::Query<Range>, state: extract::Extension<SharedState>, _: UserId) -> Result<Vec<Item>> {
     if range.size > 100 {
-        Err(client_error(()))?
+        Err(client_error(anyhow::anyhow!("range size is over 100")))?;
     }
 
     let items = repo::Item::find_by_range(&state.pool, range.before, range.size).await.map_err(server_error)?;
