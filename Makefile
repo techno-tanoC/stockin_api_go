@@ -4,6 +4,9 @@ DATABASE_HOST ?= 0.0.0.0
 start:
 	cargo watch -x run
 
+test:
+	cargo watch -x test
+
 lint:
 	cargo fmt --all -- --check
 	cargo clippy --all-targets --all-features -- -D warnings
