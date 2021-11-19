@@ -20,8 +20,11 @@ pub fn ok<T: Serialize>(data: T) -> Result<T> {
     Ok((StatusCode::OK, response::Json(Success{ data })))
 }
 
-pub fn client_error<E>(_: E) -> (StatusCode, response::Json<Message>) {
-    (StatusCode::BAD_REQUEST, response::Json(Message{ message: "bad request error".to_string()}))
+pub fn client_error<E>(err: E) -> (StatusCode, response::Json<Message>)
+where
+    E: Into<anyhow::Error>,
+{
+    (StatusCode::BAD_REQUEST, response::Json(Message{ message: err.into().to_string() }))
 }
 
 pub fn server_error<E>(_: E) -> (StatusCode, response::Json<Message>) {
