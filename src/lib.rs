@@ -6,6 +6,8 @@ use axum::routing::*;
 use sqlx::mysql::MySqlPool;
 use std::sync::Arc;
 
+use handler::*;
+
 pub struct State {
     pub pool: MySqlPool,
 }
@@ -24,13 +26,13 @@ pub struct Bearer {
 
 pub fn build_app(state: SharedState, token: String) -> Router {
     let item_actions = Router::new()
-        .route("/", get(handler::find_by_range).post(handler::create))
-        .route("/:item_id", get(handler::find).put(handler::update).delete(handler::delete))
-        .route("/:item_id/archive", patch(handler::archive))
-        .route("/:item_id/unarchive", patch(handler::unarchive));
+        .route("/", get(item::find_by_range).post(item::create))
+        .route("/:item_id", get(item::find).put(item::update).delete(item::delete))
+        .route("/:item_id/archive", patch(item::archive))
+        .route("/:item_id/unarchive", patch(item::unarchive));
 
     let title_actions = Router::new()
-        .route("/query", post(handler::query));
+        .route("/query", post(title::query));
 
     Router::new()
         .nest("/items", item_actions)
