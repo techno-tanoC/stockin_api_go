@@ -35,3 +35,14 @@ pub fn build_app(state: SharedState, token: String) -> Router {
         .layer(axum::AddExtensionLayer::new(Bearer { token }))
         .layer(tower_http::trace::TraceLayer::new_for_http())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use once_cell::sync::Lazy;
+
+    pub static POOL: Lazy<MySqlPool> = Lazy::new(|| {
+        let url = std::env::var("TEST_DATABASE_URL").unwrap();
+        MySqlPool::connect_lazy(&url).unwrap()
+    });
+}
