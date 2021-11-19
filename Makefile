@@ -5,7 +5,7 @@ start:
 	cargo watch -x run
 
 test:
-	cargo watch -x test
+	cargo watch -s "cargo test -- --test-threads=1"
 
 lint:
 	cargo fmt --all -- --check
