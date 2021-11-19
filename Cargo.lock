@@ -1178,6 +1178,7 @@ dependencies = [
  "sqlx",
  "tokio",
  "tower-http",
+ "url",
 ]
 
 [[package]]
