@@ -25,18 +25,18 @@ pub struct Bearer {
 }
 
 pub fn build_app(state: SharedState, token: String) -> Router {
-    let item_actions = Router::new()
+    let item_routes = Router::new()
         .route("/", get(item::find_by_range).post(item::create))
         .route("/:item_id", get(item::find).put(item::update).delete(item::delete))
         .route("/:item_id/archive", patch(item::archive))
         .route("/:item_id/unarchive", patch(item::unarchive));
 
-    let title_actions = Router::new()
+    let title_routes = Router::new()
         .route("/query", post(title::query));
 
     Router::new()
-        .nest("/items", item_actions)
-        .nest("/title", title_actions)
+        .nest("/items", item_routes)
+        .nest("/title", title_routes)
         .layer(axum::AddExtensionLayer::new(state))
         .layer(axum::AddExtensionLayer::new(Bearer { token }))
         .layer(tower_http::trace::TraceLayer::new_for_http())
