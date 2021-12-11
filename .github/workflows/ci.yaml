@@ -21,26 +21,36 @@ jobs:
       DATABASE_URL: mysql://root:pass@localhost:3306/test
       TEST_DATABASE_URL: mysql://root:pass@localhost:3306/test
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
       - uses: Swatinem/rust-cache@v1
       - name: Install mysql client
         run: |
           sudo apt update
           sudo apt install -y mysql-client
+
       - name: Download mysqldef
         run: |
           wget https://github.com/k0kubun/sqldef/releases/download/v0.11.13/mysqldef_linux_amd64.tar.gz
           tar xf mysqldef_linux_amd64.tar.gz
           mv mysqldef /usr/local/bin/mysqldef
           rm mysqldef_linux_amd64.tar.gz
+
       - name: Setup database
         run: |
           make setup-test
+
       - name: Build sources
         uses: actions-rs/cargo@v1
         with:
           command: build
+
       - name: Run tests
         uses: actions-rs/cargo@v1
         with:
