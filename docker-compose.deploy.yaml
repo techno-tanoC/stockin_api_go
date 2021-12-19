@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  app:
+    image: ${IMAGE_TAG}
+    environment:
+      DATABASE_URL: mysql://root:${DATABASE_PASS}@db:3306/prod
+      DATABASE_HOST: db
+      DATABASE_PASS: ${DATABASE_PASS}
+      AUTH_TOKEN: ${AUTH_TOKEN}
+    ports:
+      - "36918:3000"
+    depends_on:
+      - db
+    init: true
+
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASS}
+      MYSQL_DATABASE: prod
+    volumes:
+      - mysql:/var/lib/mysql
+
+volumes:
+  mysql:

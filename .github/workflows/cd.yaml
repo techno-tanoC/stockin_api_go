@@ -40,3 +40,37 @@ jobs:
           file: ./docker/deploy/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           push: true
+
+  deploy:
+    name: Deploy
+    needs:
+      - build_and_push
+    runs-on: [self-hosted, rutile]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Login GitLab
+        run: |
+          docker login registry.gitlab.com --username=techno-tanoC --password=${{ secrets.GITLAB_DEPLOY_API_TOKEN }}
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: registry.gitlab.com/techno-tanoc/stockin_api
+          flavor: |
+            latest=false
+          tags: |
+            type=semver,pattern={{version}}
+
+      - name: Deploy
+        env:
+          IMAGE_TAG: ${{ steps.meta.outputs.tags }}
+          DATABASE_PASS: ${{ secrets.DATABASE_PASS }}
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+        run: |
+          docker-compose -f docker-compose.deploy.yaml up -d db
+          docker-compose -f docker-compose.deploy.yaml run --rm app dockerize -wait tcp://db:3306 -timeout 60s
+          docker-compose -f docker-compose.deploy.yaml run --rm app make migrate
+          docker-compose -f docker-compose.deploy.yaml up -d app

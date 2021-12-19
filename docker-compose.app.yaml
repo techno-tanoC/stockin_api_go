@@ -7,11 +7,12 @@ services:
       dockerfile: docker/dev/Dockerfile
     command: sh -c "
       dockerize -timeout 30s -wait tcp://db:3306 &&
-      make reset DATABASE_HOST=db &&
+      make reset &&
       cargo watch -x run"
     init: true
     environment:
       DATABASE_URL: mysql://root:pass@db:3306/dev
+      DATABASE_HOST: db
       AUTH_TOKEN: debug
     ports:
       - "3000:3000"
