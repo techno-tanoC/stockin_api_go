@@ -21,7 +21,7 @@ jobs:
 
       - name: Login GitLab
         run: |
-          docker login registry.gitlab.com --username=techno-tanoC --password=${{ secrets.GITLAB_DEPLOY_API_TOKEN }}
+          echo ${{ secrets.GITLAB_DEPLOY_API_TOKEN }} | docker login registry.gitlab.com --username techno-tanoC --password-stdin
 
       - name: Docker meta
         id: meta
@@ -52,7 +52,7 @@ jobs:
 
       - name: Login GitLab
         run: |
-          docker login registry.gitlab.com --username=techno-tanoC --password=${{ secrets.GITLAB_DEPLOY_API_TOKEN }}
+          echo ${{ secrets.GITLAB_DEPLOY_API_TOKEN }} | docker login registry.gitlab.com --username techno-tanoC --password-stdin
 
       - name: Docker meta
         id: meta
