@@ -2,6 +2,7 @@ version: '3.9'
 
 services:
   app:
+    restart: unless-stopped
     image: ${IMAGE_TAG}
     environment:
       DATABASE_URL: mysql://root:${DATABASE_PASS}@db:3306/prod
@@ -15,6 +16,7 @@ services:
     init: true
 
   db:
+    restart: unless-stopped
     image: mysql:8.0.27
     environment:
       MYSQL_ROOT_PASSWORD: ${DATABASE_PASS}
