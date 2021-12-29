@@ -12,6 +12,7 @@ services:
     init: true
     environment:
       DATABASE_URL: mysql://root:pass@db:3306/dev
+      TEST_DATABASE_URL: mysql://root:pass@db:3306/test
       DATABASE_HOST: db
       AUTH_TOKEN: debug
     ports:
