@@ -124,3 +124,17 @@ pub async fn delete(id: extract::Path<Id>, state: extract::Extension<SharedState
     let _ = repo::Item::delete(&state.pool, id.item_id).await.map_err(server_error)?;
     ok(())
 }
+
+pub async fn export(state: extract::Extension<SharedState>, _: UserId) -> RawResult<Vec<Item>> {
+    let items = repo::Item::all(&state.pool).await.map_err(server_error)?;
+    ok_raw(items.into_iter().map(|i| i.into()).collect())
+}
+
+pub async fn import(params: extract::Json<Vec<Params>>,state: extract::Extension<SharedState>, _: UserId) -> Result<()> {
+    let mut tx = state.pool.begin().await.map_err(server_error)?;
+    for p in params.iter() {
+        repo::Item::insert(&mut tx, &p.title, &p.url).await.map_err(server_error)?;
+    }
+    tx.commit().await.map_err(server_error)?;
+    ok(())
+}
