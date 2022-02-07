@@ -29,7 +29,9 @@ pub fn build_app(state: SharedState, token: String) -> Router {
         .route("/", get(item::find_by_range).post(item::create))
         .route("/:item_id", get(item::find).put(item::update).delete(item::delete))
         .route("/:item_id/archive", patch(item::archive))
-        .route("/:item_id/unarchive", patch(item::unarchive));
+        .route("/:item_id/unarchive", patch(item::unarchive))
+        .route("/export", get(item::export))
+        .route("/import", post(item::import));
 
     let title_routes = Router::new()
         .route("/query", post(title::query));

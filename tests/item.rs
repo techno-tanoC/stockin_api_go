@@ -306,3 +306,113 @@ async fn test_item_delete() {
         assert_eq!(option, None);
     }).await;
 }
+
+#[tokio::test]
+async fn test_item_export() {
+    run_test(async {
+        for _ in 0..10 {
+            repo::Item::insert(&*POOL, "example", "https://example.com/").await.unwrap();
+        }
+
+        let req = authed_request()
+            .uri("/items/export")
+            .body(Body::empty())
+            .unwrap();
+
+        let res = build_test_app()
+            .await
+            .oneshot(req)
+            .await
+            .unwrap();
+
+        assert_eq!(res.status(), StatusCode::OK);
+
+        let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(json.as_array().unwrap().len(), 10);
+    }).await;
+}
+
+#[tokio::test]
+async fn test_item_import() {
+    run_test(async {
+        let mut jsons = vec![];
+        for _ in 0..10 {
+            let j = json!({
+                "title": "title",
+                "url": "url"
+            });
+            jsons.push(j);
+        }
+
+        let body = serde_json::to_vec(&jsons).unwrap();
+
+        let req = authed_request()
+            .method(Method::POST)
+            .uri("/items/import")
+            .body(Body::from(body))
+            .unwrap();
+
+        let res = build_test_app()
+            .await
+            .oneshot(req)
+            .await
+            .unwrap();
+
+        assert_eq!(res.status(), StatusCode::OK);
+
+        let items = repo::Item::all(&*POOL).await.unwrap();
+        assert_eq!(items.len(), 10);
+    }).await;
+}
+
+#[tokio::test]
+async fn test_item_export_and_import() {
+    run_test(async {
+        let mut jsons = vec![];
+        for _ in 0..10 {
+            let j = json!({
+                "title": "title",
+                "url": "url"
+            });
+            jsons.push(j);
+        }
+
+        {
+            let body = serde_json::to_vec(&jsons).unwrap();
+
+            let req = authed_request()
+                .method(Method::POST)
+                .uri("/items/import")
+                .body(Body::from(body))
+                .unwrap();
+
+            build_test_app()
+                .await
+                .oneshot(req)
+                .await
+                .unwrap();
+        }
+
+        {
+            let req = authed_request()
+                .uri("/items/export")
+                .body(Body::empty())
+                .unwrap();
+
+            let res = build_test_app()
+                .await
+                .oneshot(req)
+                .await
+                .unwrap();
+
+            let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
+            let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+
+            for i in 0..10 {
+                assert_eq!(jsons[i].get("title").unwrap(), json[i].get("title").unwrap());
+                assert_eq!(jsons[i].get("url").unwrap(), json[i].get("url").unwrap());
+            }
+        }
+    }).await;
+}
