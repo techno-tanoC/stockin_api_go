@@ -10,6 +10,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     services:
       mysql:
         image: mysql:8.0
@@ -38,6 +39,14 @@ jobs:
           tar xf mysqldef_linux_amd64.tar.gz
           mv mysqldef /usr/local/bin/mysqldef
           rm mysqldef_linux_amd64.tar.gz
+
+      - name: Wait for MySQL
+        timeout-minutes: 1
+        run: |
+          while ! make check-port; do
+            echo "wait a second"
+            sleep 1
+          done
 
       - name: Setup database
         run: |

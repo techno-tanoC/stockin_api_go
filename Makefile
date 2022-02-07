@@ -49,6 +49,9 @@ drop:
 
 reset: drop create create-test apply apply-test seed
 
+check-port:
+	mysqladmin ping --host=$(DATABASE_HOST) --user=root --password=$(DATABASE_PASS)
+
 setup-test: create-test apply-test
 
 migrate:
