@@ -39,6 +39,13 @@ jobs:
           mv mysqldef /usr/local/bin/mysqldef
           rm mysqldef_linux_amd64.tar.gz
 
+      - name: Wait for MySQL
+        run: |
+          while ! make check-port; do
+            echo "wait a second"
+            sleep 1
+          done
+
       - name: Setup database
         run: |
           make setup-test
