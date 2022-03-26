@@ -9,7 +9,7 @@ RUN <<EOF
 EOF
 
 RUN <<EOF
-  wget https://github.com/k0kubun/sqldef/releases/latest/download/mysqldef_linux_amd64.tar.gz
+  wget https://github.com/k0kubun/sqldef/releases/download/v0.11.45/mysqldef_linux_amd64.tar.gz
   tar -C /usr/local/bin -xvf mysqldef_linux_amd64.tar.gz
   rm mysqldef_linux_amd64.tar.gz
 EOF
