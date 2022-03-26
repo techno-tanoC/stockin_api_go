@@ -3,13 +3,9 @@ version: '3.9'
 services:
   app:
     build:
-      context: ./
-      dockerfile: docker/dev/Dockerfile
-    command: sh -c "
-      dockerize -timeout 30s -wait tcp://db:3306 &&
-      make reset &&
-      cargo watch -x run"
-    init: true
+      context: ../
+      dockerfile: .devcontainer/Dockerfile
+    command: ["sleep", "infinity"]
     environment:
       DATABASE_URL: mysql://root:pass@db:3306/dev
       TEST_DATABASE_URL: mysql://root:pass@db:3306/test
@@ -18,18 +14,15 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - .:/work
-      - target:/work/target
-    depends_on:
-      - db
+      - ..:/workspace
+      - cargo:/usr/local/cargo
+      - target:/workspace/target
 
   db:
     image: mysql:8.0.27
     environment:
       MYSQL_ROOT_PASSWORD: pass
-      MYSQL_DATABASE: dev
-    ports:
-      - "3306:3306"
 
 volumes:
+  cargo:
   target:
