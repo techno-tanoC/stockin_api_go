@@ -5,7 +5,7 @@ RUN cargo install cargo-watch
 
 RUN <<EOF
   apt update
-  apt install -y wget make default-mysql-client
+  apt install -y wget make default-mysql-client git
 EOF
 
 RUN <<EOF
