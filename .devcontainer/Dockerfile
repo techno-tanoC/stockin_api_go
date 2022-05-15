@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.3-labs
+# syntax=docker/dockerfile:1.4
 FROM rust:1.59-slim-bullseye
 
 RUN cargo install cargo-watch
