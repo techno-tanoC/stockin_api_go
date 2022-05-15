@@ -20,7 +20,6 @@ where B: Send,
 
         let token_option = req
             .headers()
-            .expect("other extractor taken headers")
             .get(header::AUTHORIZATION)
             .and_then(|value| value.to_str().ok())
             .map(|value| value.trim_start_matches("Bearer "));

@@ -39,8 +39,8 @@ pub fn build_app(state: SharedState, token: String) -> Router {
     Router::new()
         .nest("/items", item_routes)
         .nest("/title", title_routes)
-        .layer(axum::AddExtensionLayer::new(state))
-        .layer(axum::AddExtensionLayer::new(Bearer { token }))
+        .layer(axum::Extension(state))
+        .layer(axum::Extension(Bearer { token }))
         .layer(tower_http::trace::TraceLayer::new_for_http())
 }
 
