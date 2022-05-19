@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1.4
 FROM rust:1.59-slim-bullseye
+WORKDIR /workspace
 
 RUN cargo install cargo-watch
 
