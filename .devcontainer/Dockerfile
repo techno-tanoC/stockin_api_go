@@ -14,6 +14,8 @@ RUN <<EOF
 EOF
 
 RUN <<EOF
+  go install github.com/cosmtrek/air@latest
+
   go install github.com/volatiletech/sqlboiler/v4@latest
   go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql@latest
 
