@@ -1,7 +1,7 @@
 package main
 
 import (
-	"net/http"
+	"stockin/handler"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -9,17 +9,25 @@ import (
 
 func main() {
 	e := echo.New()
-
+	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.KeyAuth(auth("debug")))
 
-	e.GET("/", hello)
+	title := e.Group("/title")
+	title.POST("/query", handler.TitleQuery)
+
+	thumbnail := e.Group("/thumbnail")
+	thumbnail.POST("/query", handler.ThumbnailQuery)
+
 	err := e.Start(":3000")
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
 }
 
-func hello(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!")
+func auth(token string) middleware.KeyAuthValidator {
+	return func(key string, c echo.Context) (bool, error) {
+		return key == token, nil
+	}
 }
