@@ -1,0 +1,11 @@
+{
+    "dockerComposeFile": "compose.yaml",
+    "service": "app",
+    "workspaceFolder": "/workspace",
+    "shutdownAction": "stopCompose",
+    "extensions": [
+        "golang.go",
+        "bungcip.better-toml",
+        "ms-azuretools.vscode-docker"
+    ]
+}

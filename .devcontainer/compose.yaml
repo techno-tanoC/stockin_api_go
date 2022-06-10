@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    command: sleep infinity
+    init: true
+    platform: linux/x86_64
+    volumes:
+      - ..:/workspace
+
+  db:
+    image: mysql:8.0.27
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+    platform: linux/x86_64
+    ports:
+      - "3306:3306"
