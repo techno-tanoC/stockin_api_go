@@ -19,11 +19,11 @@ func ThumbnailQuery(c echo.Context) error {
 		return fmt.Errorf("thumbnail query error: %w", err)
 	}
 
-	err = ok(c, domain.Thumbnail{
+	err = json(c, domain.Thumbnail{
 		URL: url.URL,
 	})
 	if err != nil {
-		return fmt.Errorf("ok error: %w", err)
+		return fmt.Errorf("json error: %w", err)
 	}
 
 	return nil

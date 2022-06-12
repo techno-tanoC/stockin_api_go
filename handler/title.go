@@ -19,11 +19,11 @@ func TitleQuery(c echo.Context) error {
 		return fmt.Errorf("title query error: %w", err)
 	}
 
-	err = ok(c, domain.Title{
+	err = json(c, domain.Title{
 		Title: title.Title,
 	})
 	if err != nil {
-		return fmt.Errorf("ok error: %w", err)
+		return fmt.Errorf("json error: %w", err)
 	}
 
 	return nil
