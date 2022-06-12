@@ -1,4 +1,4 @@
-package handler
+package domain
 
 type URL struct {
 	URL string `json:"url"`
