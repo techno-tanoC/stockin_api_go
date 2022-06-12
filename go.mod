@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/labstack/echo/v4 v4.7.2
+	github.com/sethvargo/go-envconfig v0.7.0
 )
 
 require (
