@@ -17,3 +17,7 @@ type Data struct {
 func json(c echo.Context, d interface{}) error {
 	return c.JSON(http.StatusOK, Data{d})
 }
+
+func noContent(c echo.Context) error {
+	return c.NoContent(http.StatusNoContent)
+}
