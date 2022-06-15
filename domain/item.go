@@ -29,15 +29,31 @@ func ItemIndex(ctx context.Context, db DB, from int64, limit int) ([]*models.Ite
 }
 
 func ItemCreate(ctx context.Context, db DB, title, url, thumbnail string) (*models.Item, error) {
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, fmt.Errorf("begin error: %w", err)
+	}
+	defer tx.Commit()
+
 	item := &models.Item{
 		Title:     title,
 		URL:       url,
 		Thumbnail: thumbnail,
 	}
 
-	err := item.Insert(ctx, db, boil.Infer())
+	err = item.Insert(ctx, tx, boil.Infer())
 	if err != nil {
+		tx.Rollback()
 		return nil, fmt.Errorf("insert error: %w", err)
+	}
+
+	// Reload to get the time on the database
+	// MySQL rounds the time
+	// https://dev.mysql.com/doc/refman/8.0/ja/fractional-seconds.html
+	err = item.Reload(ctx, tx)
+	if err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("reload error: %w", err)
 	}
 
 	return item, nil

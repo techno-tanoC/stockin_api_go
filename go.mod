@@ -6,6 +6,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/google/go-cmp v0.5.8
 	github.com/kat-co/vala v0.0.0-20170210184112-42e1d8b61f12
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/sethvargo/go-envconfig v0.7.0
