@@ -6,6 +6,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type URL struct {
+	URL string `json:"url"`
+}
+
 type Data struct {
 	Data interface{} `json:"data"`
 }
