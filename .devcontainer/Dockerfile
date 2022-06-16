@@ -4,20 +4,20 @@ WORKDIR /workspace
 
 RUN <<EOF
   apt update
-  apt install -y wget make default-mysql-client git
+  apt install -y wget make git postgresql-client locales-all
 EOF
 
 RUN <<EOF
-  wget https://github.com/k0kubun/sqldef/releases/download/v0.11.59/mysqldef_linux_amd64.tar.gz
-  tar -C /usr/local/bin -xvf mysqldef_linux_amd64.tar.gz
-  rm mysqldef_linux_amd64.tar.gz
+  wget https://github.com/k0kubun/sqldef/releases/download/v0.11.59/psqldef_linux_amd64.tar.gz
+  tar -C /usr/local/bin -xvf psqldef_linux_amd64.tar.gz
+  rm psqldef_linux_amd64.tar.gz
 EOF
 
 RUN <<EOF
   go install github.com/cosmtrek/air@latest
 
-  go install github.com/volatiletech/sqlboiler/v4@latest
-  go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql@latest
+  go install github.com/volatiletech/sqlboiler/v4@v4.10.2
+  go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql@v4.10.2
 
   go install golang.org/x/tools/gopls@latest
 EOF

@@ -1,7 +1,7 @@
-[mysql]
-host = "db"
-port = 3306
+[psql]
+host = "postgres"
+port = 5432
 user = "root"
 pass = "pass"
 dbname = "dev"
-sslmode = "PREFERRED"
+sslmode = "disable"

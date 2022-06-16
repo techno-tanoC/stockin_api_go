@@ -8,9 +8,9 @@ import (
 	"stockin/domain"
 	"stockin/handler"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	_ "github.com/lib/pq"
 	"github.com/sethvargo/go-envconfig"
 )
 
@@ -28,7 +28,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	rawDB, err := sql.Open("mysql", conf.Database)
+	rawDB, err := sql.Open("postgres", conf.Database)
 	if err != nil {
 		log.Fatal(err)
 	}

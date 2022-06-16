@@ -6,7 +6,7 @@ import (
 	"log"
 	"stockin/models"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 	"github.com/sethvargo/go-envconfig"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
@@ -23,7 +23,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db, err := sql.Open("mysql", conf.Database)
+	db, err := sql.Open("postgres", conf.Database)
 	if err != nil {
 		log.Fatal(err)
 	}

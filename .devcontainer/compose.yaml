@@ -3,18 +3,19 @@ services:
     build: .
     command: sleep infinity
     environment:
-      DATABASE: root:pass@(db)/dev?parseTime=true
-      TEST_DATABASE: root:pass@(db)/test?parseTime=true
+      DATABASE: "host=postgres port=5432 user=root password=pass dbname=dev sslmode=disable"
+      TEST_DATABASE: "host=postgres port=5432 user=root password=pass dbname=test sslmode=disable"
       TOKEN: debug
     init: true
     platform: linux/x86_64
     volumes:
       - ..:/workspace
 
-  db:
-    image: mysql:8.0.27
+  postgres:
+    image: postgres:13.7
     environment:
-      MYSQL_ROOT_PASSWORD: pass
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: pass
     platform: linux/x86_64
     ports:
-      - "3306:3306"
+      - "5432:5432"

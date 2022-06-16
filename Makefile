@@ -1,32 +1,34 @@
 SCHEMA_FILE ?= schema.sql
 DATABASE_HOST ?= db
 DATABASE_PASS ?= pass
+export PGPASSWORD = pass
+export PGSSLMODE = disable
 
 seed:
 	go run ./cmd/seed
 
-mysql:
-	mysql --host=$(DATABASE_HOST) --user=root --password=$(DATABASE_PASS) dev
+psql:
+	psql --host=postgres --user=root dev
 
-mysql-test:
-	mysql --host=$(DATABASE_HOST) --user=root --password=$(DATABASE_PASS) test
+psql-test:
+	psql --host=postgres --user=root test
 
 create:
-	echo "CREATE DATABASE IF NOT EXISTS dev" | mysql --host=$(DATABASE_HOST) --user=root --password=$(DATABASE_PASS)
+	psql --host=postgres --user=root --command "CREATE DATABASE dev"
 
 create-test:
-	echo "CREATE DATABASE IF NOT EXISTS test" | mysql --host=$(DATABASE_HOST) --user=root --password=$(DATABASE_PASS)
+	psql --host=postgres --user=root --command "CREATE DATABASE test"
 
 drop:
-	echo "DROP DATABASE IF EXISTS dev" | mysql --host=$(DATABASE_HOST) --user=root --password=$(DATABASE_PASS)
+	psql --host=postgres --user=root --command "DROP DATABASE dev" | true
 
 drop-test:
-	echo "DROP DATABASE IF EXISTS test" | mysql --host=$(DATABASE_HOST) --user=root --password=$(DATABASE_PASS)
+	psql --host=postgres --user=root --command "DROP DATABASE test" | true
 
 apply:
-	cat $(SCHEMA_FILE) | mysqldef --host=$(DATABASE_HOST) --user=root --password=$(DATABASE_PASS) dev
+	cat schema.sql | psqldef --host postgres --user root dev
 
 apply-test:
-	cat $(SCHEMA_FILE) | mysqldef --host=$(DATABASE_HOST) --user=root --password=$(DATABASE_PASS) test
+	cat schema.sql | psqldef --host postgres --user root test
 
 reset: drop drop-test create create-test apply apply-test seed

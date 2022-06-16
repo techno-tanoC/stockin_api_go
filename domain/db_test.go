@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"stockin/domain"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 	"github.com/sethvargo/go-envconfig"
 )
 
@@ -20,7 +20,7 @@ func buildMockDB(ctx context.Context) (*domain.MockDB, func(), error) {
 		return nil, func() {}, err
 	}
 
-	rawDB, err := sql.Open("mysql", conf.TestDatabase)
+	rawDB, err := sql.Open("postgres", conf.TestDatabase)
 	if err != nil {
 		return nil, func() {}, err
 	}
