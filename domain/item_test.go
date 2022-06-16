@@ -7,7 +7,6 @@ import (
 	"stockin/models"
 	"testing"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -16,20 +15,12 @@ import (
 var itemOpt = cmpopts.IgnoreFields(models.Item{}, "ID", "CreatedAt", "UpdatedAt")
 
 func TestItemCreate(t *testing.T) {
-	rawDB, err := sql.Open("mysql", "root:pass@(db)/test?parseTime=true")
-	if err != nil {
-		t.Fatalf("TestItemCreate: %v", err)
-	}
-	defer rawDB.Close()
-
 	ctx := context.Background()
-
-	tx, err := rawDB.BeginTx(ctx, nil)
+	db, release, err := buildMockDB(ctx)
 	if err != nil {
 		t.Fatalf("TestItemCreate: %v", err)
 	}
-	defer tx.Rollback()
-	db := &domain.MockDB{&domain.MockTx{tx}}
+	defer release()
 
 	item, err := domain.ItemCreate(ctx, db, "test", "https://example.com/", "https://example.com/thumbnail.jpg")
 	if err != nil {
@@ -57,27 +48,14 @@ func TestItemCreate(t *testing.T) {
 }
 
 func TestItemUpdate(t *testing.T) {
-	rawDB, err := sql.Open("mysql", "root:pass@(db)/test?parseTime=true")
-	if err != nil {
-		t.Fatalf("TestItemUpdate: %v", err)
-	}
-	defer rawDB.Close()
-
 	ctx := context.Background()
-
-	tx, err := rawDB.BeginTx(ctx, nil)
+	db, release, err := buildMockDB(ctx)
 	if err != nil {
-		t.Fatalf("TestItemUpdate: %v", err)
+		t.Fatalf("TestItemCreate: %v", err)
 	}
-	defer tx.Rollback()
-	db := &domain.MockDB{&domain.MockTx{tx}}
+	defer release()
 
-	item := &models.Item{
-		Title:     "test",
-		URL:       "https://example.com/",
-		Thumbnail: "https://example.com/thumbnail.jpg",
-	}
-	err = item.Insert(ctx, db, boil.Infer())
+	item, err := insertItem(ctx, db, "test", "https://example.com/", "https://example.com/thumbnail.jpg")
 	if err != nil {
 		t.Fatalf("TestItemUpdate: %v", err)
 	}
@@ -108,27 +86,14 @@ func TestItemUpdate(t *testing.T) {
 }
 
 func TestItemDelete(t *testing.T) {
-	rawDB, err := sql.Open("mysql", "root:pass@(db)/test?parseTime=true")
-	if err != nil {
-		t.Fatalf("TestItemDelete: %v", err)
-	}
-	defer rawDB.Close()
-
 	ctx := context.Background()
-
-	tx, err := rawDB.BeginTx(ctx, nil)
+	db, release, err := buildMockDB(ctx)
 	if err != nil {
-		t.Fatalf("TestItemDelete: %v", err)
+		t.Fatalf("TestItemCreate: %v", err)
 	}
-	defer tx.Rollback()
-	db := &domain.MockDB{&domain.MockTx{tx}}
+	defer release()
 
-	item := &models.Item{
-		Title:     "test",
-		URL:       "https://example.com/",
-		Thumbnail: "https://example.com/thumbnail.jpg",
-	}
-	err = item.Insert(ctx, db, boil.Infer())
+	item, err := insertItem(ctx, db, "test", "https://example.com/", "https://example.com/thumbnail.jpg")
 	if err != nil {
 		t.Fatalf("TestItemDelete: %v", err)
 	}
@@ -142,4 +107,18 @@ func TestItemDelete(t *testing.T) {
 	if err != sql.ErrNoRows {
 		t.Fatalf("TestItemUpdate: %v", err)
 	}
+}
+
+func insertItem(ctx context.Context, db domain.DB, title, url, thumbnail string) (*models.Item, error) {
+	item := &models.Item{
+		Title:     title,
+		URL:       url,
+		Thumbnail: thumbnail,
+	}
+	err := item.Insert(ctx, db, boil.Infer())
+	if err != nil {
+		return nil, err
+	}
+
+	return item, nil
 }
