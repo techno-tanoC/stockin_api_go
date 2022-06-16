@@ -3,6 +3,7 @@ services:
     build: .
     command: sleep infinity
     environment:
+      DATABASE: root:pass@(db)/dev?parseTime=true
       TOKEN: debug
     init: true
     platform: linux/x86_64

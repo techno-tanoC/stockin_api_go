@@ -7,13 +7,23 @@ import (
 	"stockin/models"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/sethvargo/go-envconfig"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
+type Config struct {
+	Database string `env:"DATABASE,required"`
+}
+
 func main() {
 	ctx := context.Background()
+	conf := new(Config)
+	err := envconfig.Process(ctx, conf)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	db, err := sql.Open("mysql", "root:pass@(db)/dev?parseTime=true")
+	db, err := sql.Open("mysql", conf.Database)
 	if err != nil {
 		log.Fatal(err)
 	}

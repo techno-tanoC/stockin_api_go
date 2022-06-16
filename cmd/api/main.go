@@ -15,8 +15,9 @@ import (
 )
 
 type Config struct {
-	Port  int    `env:"PORT,default=3000"`
-	Token string `env:"TOKEN,required"`
+	Database string `env:"DATABASE,required"`
+	Port     int    `env:"PORT,default=3000"`
+	Token    string `env:"TOKEN,required"`
 }
 
 func main() {
@@ -27,7 +28,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	rawDB, err := sql.Open("mysql", "root:pass@(db)/dev?parseTime=true")
+	rawDB, err := sql.Open("mysql", conf.Database)
 	if err != nil {
 		log.Fatal(err)
 	}
