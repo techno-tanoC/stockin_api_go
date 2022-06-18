@@ -27,6 +27,7 @@ type Item struct {
 	Title     string    `boil:"title" json:"title" toml:"title" yaml:"title"`
 	URL       string    `boil:"url" json:"url" toml:"url" yaml:"url"`
 	Thumbnail string    `boil:"thumbnail" json:"thumbnail" toml:"thumbnail" yaml:"thumbnail"`
+	Sort      string    `boil:"sort" json:"sort" toml:"sort" yaml:"sort"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 
@@ -39,6 +40,7 @@ var ItemColumns = struct {
 	Title     string
 	URL       string
 	Thumbnail string
+	Sort      string
 	CreatedAt string
 	UpdatedAt string
 }{
@@ -46,6 +48,7 @@ var ItemColumns = struct {
 	Title:     "title",
 	URL:       "url",
 	Thumbnail: "thumbnail",
+	Sort:      "sort",
 	CreatedAt: "created_at",
 	UpdatedAt: "updated_at",
 }
@@ -55,6 +58,7 @@ var ItemTableColumns = struct {
 	Title     string
 	URL       string
 	Thumbnail string
+	Sort      string
 	CreatedAt string
 	UpdatedAt string
 }{
@@ -62,6 +66,7 @@ var ItemTableColumns = struct {
 	Title:     "items.title",
 	URL:       "items.url",
 	Thumbnail: "items.thumbnail",
+	Sort:      "items.sort",
 	CreatedAt: "items.created_at",
 	UpdatedAt: "items.updated_at",
 }
@@ -140,6 +145,7 @@ var ItemWhere = struct {
 	Title     whereHelperstring
 	URL       whereHelperstring
 	Thumbnail whereHelperstring
+	Sort      whereHelperstring
 	CreatedAt whereHelpertime_Time
 	UpdatedAt whereHelpertime_Time
 }{
@@ -147,6 +153,7 @@ var ItemWhere = struct {
 	Title:     whereHelperstring{field: "\"items\".\"title\""},
 	URL:       whereHelperstring{field: "\"items\".\"url\""},
 	Thumbnail: whereHelperstring{field: "\"items\".\"thumbnail\""},
+	Sort:      whereHelperstring{field: "\"items\".\"sort\""},
 	CreatedAt: whereHelpertime_Time{field: "\"items\".\"created_at\""},
 	UpdatedAt: whereHelpertime_Time{field: "\"items\".\"updated_at\""},
 }
@@ -168,8 +175,8 @@ func (*itemR) NewStruct() *itemR {
 type itemL struct{}
 
 var (
-	itemAllColumns            = []string{"id", "title", "url", "thumbnail", "created_at", "updated_at"}
-	itemColumnsWithoutDefault = []string{"title", "url", "thumbnail", "created_at", "updated_at"}
+	itemAllColumns            = []string{"id", "title", "url", "thumbnail", "sort", "created_at", "updated_at"}
+	itemColumnsWithoutDefault = []string{"title", "url", "thumbnail", "sort", "created_at", "updated_at"}
 	itemColumnsWithDefault    = []string{"id"}
 	itemPrimaryKeyColumns     = []string{"id"}
 	itemGeneratedColumns      = []string{}

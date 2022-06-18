@@ -5,15 +5,16 @@ import (
 	"fmt"
 	"stockin/models"
 
+	"github.com/gofrs/uuid"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-func ItemIndex(ctx context.Context, db DB, from int64, limit int) ([]*models.Item, error) {
+func ItemIndex(ctx context.Context, db DB, from string, limit int) ([]*models.Item, error) {
 	items, err := models.Items(
-		models.ItemWhere.ID.LT(from),
+		models.ItemWhere.Sort.LT(from),
 		qm.Limit(limit),
-		qm.OrderBy(models.ItemColumns.ID+" DESC"),
+		qm.OrderBy(models.ItemColumns.Sort+" DESC"),
 	).All(ctx, db)
 	if err != nil {
 		return nil, fmt.Errorf("index error: %w", err)
@@ -35,10 +36,17 @@ func ItemCreate(ctx context.Context, db DB, title, url, thumbnail string) (*mode
 	}
 	defer tx.Commit()
 
+	uuid, err := uuid.NewV7(uuid.NanosecondPrecision)
+	if err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("uuid error: %w", err)
+	}
+
 	item := &models.Item{
 		Title:     title,
 		URL:       url,
 		Thumbnail: thumbnail,
+		Sort:      uuid.String(),
 	}
 
 	err = item.Insert(ctx, tx, boil.Infer())
@@ -73,7 +81,7 @@ func ItemUpdate(ctx context.Context, db DB, id int64, title, url, thumbnail stri
 		Thumbnail: thumbnail,
 	}
 
-	_, err = item.Update(ctx, tx, boil.Infer())
+	_, err = item.Update(ctx, tx, boil.Blacklist(models.ItemColumns.Sort))
 	if err != nil {
 		tx.Rollback()
 		return nil, fmt.Errorf("update error: %w", err)

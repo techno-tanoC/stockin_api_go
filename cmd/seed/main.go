@@ -6,6 +6,7 @@ import (
 	"log"
 	"stockin/models"
 
+	"github.com/gofrs/uuid"
 	_ "github.com/lib/pq"
 	"github.com/sethvargo/go-envconfig"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -29,6 +30,12 @@ func main() {
 	}
 
 	for _, item := range items() {
+		uuid, err := uuid.NewV7(uuid.NanosecondPrecision)
+		if err != nil {
+			log.Fatal(err)
+		}
+		item.Sort = uuid.String()
+
 		err = item.Insert(ctx, db, boil.Infer())
 		if err != nil {
 			log.Fatal(err)

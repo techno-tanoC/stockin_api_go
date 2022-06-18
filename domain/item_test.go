@@ -7,6 +7,7 @@ import (
 	"stockin/models"
 	"testing"
 
+	"github.com/gofrs/uuid"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -31,6 +32,7 @@ func TestItemCreate(t *testing.T) {
 		Title:     "test",
 		URL:       "https://example.com/",
 		Thumbnail: "https://example.com/thumbnail.jpg",
+		Sort:      item.Sort,
 	}, itemOpt)
 	if diff != "" {
 		t.Fatalf("TestItemCreate: %v", err)
@@ -69,6 +71,7 @@ func TestItemUpdate(t *testing.T) {
 		Title:     "test2",
 		URL:       "https://example2.com/",
 		Thumbnail: "https://example2.com/thumbnail.jpg",
+		Sort:      item.Sort,
 	}, itemOpt)
 	if diff != "" {
 		t.Fatalf("TestItemUpdate: %v", diff)
@@ -115,7 +118,13 @@ func insertItem(ctx context.Context, db domain.DB, title, url, thumbnail string)
 		URL:       url,
 		Thumbnail: thumbnail,
 	}
-	err := item.Insert(ctx, db, boil.Infer())
+	uuid, err := uuid.NewV7(uuid.NanosecondPrecision)
+	if err != nil {
+		return nil, err
+	}
+	item.Sort = uuid.String()
+
+	err = item.Insert(ctx, db, boil.Infer())
 	if err != nil {
 		return nil, err
 	}

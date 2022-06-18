@@ -17,10 +17,7 @@ type ItemParams struct {
 
 func ItemIndex(db domain.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		from, err := strconv.ParseInt(c.QueryParam("from"), 10, 64)
-		if err != nil {
-			return fmt.Errorf("parse from error: %w", err)
-		}
+		from := c.QueryParam("from")
 
 		limitStr := c.QueryParam("limit")
 		limit, err := strconv.Atoi(limitStr)
