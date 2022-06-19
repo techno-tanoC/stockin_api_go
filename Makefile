@@ -32,3 +32,8 @@ apply-test:
 	cat schema.sql | psqldef --host postgres --user root test
 
 reset: drop drop-test create create-test apply apply-test seed
+
+migrate:
+	psql --host=postgres --user=root --command "CREATE DATABASE prod" | true
+	cat schema.sql | psqldef --host postgres --user root prod --dry-run
+	cat schema.sql | psqldef --host postgres --user root prod
