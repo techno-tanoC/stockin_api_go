@@ -10,9 +10,9 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-func ItemIndex(ctx context.Context, db DB, from string, limit int) ([]*models.Item, error) {
+func ItemIndex(ctx context.Context, db DB, before string, limit int) ([]*models.Item, error) {
 	items, err := models.Items(
-		models.ItemWhere.Sort.LT(from),
+		models.ItemWhere.Sort.LT(before),
 		qm.Limit(limit),
 		qm.OrderBy(models.ItemColumns.Sort+" DESC"),
 	).All(ctx, db)

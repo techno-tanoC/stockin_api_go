@@ -17,16 +17,22 @@ type ItemParams struct {
 
 func ItemIndex(db domain.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		from := c.QueryParam("from")
+		before := c.QueryParam("before")
+		if before == "" {
+			before = "ffffffff-ffff-ffff-ffff-ffffffffffff"
+		}
 
 		limitStr := c.QueryParam("limit")
+		if limitStr == "" {
+			limitStr = "50"
+		}
 		limit, err := strconv.Atoi(limitStr)
 		if err != nil {
 			return fmt.Errorf("parse from error: %w", err)
 		}
 
 		ctx := context.Background()
-		items, err := domain.ItemIndex(ctx, db, from, limit)
+		items, err := domain.ItemIndex(ctx, db, before, limit)
 		if err != nil {
 			return fmt.Errorf("insert error: %w", err)
 		}
