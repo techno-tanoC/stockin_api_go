@@ -71,13 +71,10 @@ func ItemCreate(db domain.DB) echo.HandlerFunc {
 
 func ItemUpdate(db domain.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		id, err := strconv.ParseInt(c.Param("id"), 10, 64)
-		if err != nil {
-			return fmt.Errorf("invalid id error: %w", err)
-		}
+		id := c.Param("id")
 
 		params := new(ItemParams)
-		err = c.Bind(params)
+		err := c.Bind(params)
 		if err != nil {
 			return fmt.Errorf("bind error: %w", err)
 		}
@@ -99,13 +96,10 @@ func ItemUpdate(db domain.DB) echo.HandlerFunc {
 
 func ItemDelete(db domain.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		id, err := strconv.ParseInt(c.Param("id"), 10, 64)
-		if err != nil {
-			return fmt.Errorf("invalid id error: %w", err)
-		}
+		id := c.Param("id")
 
 		ctx := context.Background()
-		err = domain.ItemDelete(ctx, db, id)
+		err := domain.ItemDelete(ctx, db, id)
 		if err != nil {
 			return fmt.Errorf("item delete error: %w", err)
 		}

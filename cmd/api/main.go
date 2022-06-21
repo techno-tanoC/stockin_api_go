@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"stockin/domain"
@@ -28,12 +27,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	rawDB, err := sql.Open("postgres", conf.Database)
+	db, release, err := domain.BuildDB(conf.Database)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer rawDB.Close()
-	db := &domain.RealDB{DB: rawDB}
+	defer release()
 
 	e := echo.New()
 	e.Pre(middleware.RemoveTrailingSlash())

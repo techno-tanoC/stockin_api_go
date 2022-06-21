@@ -5,16 +5,15 @@ import (
 	"fmt"
 	"stockin/models"
 
-	"github.com/gofrs/uuid"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 func ItemIndex(ctx context.Context, db DB, before string, limit int) ([]*models.Item, error) {
 	items, err := models.Items(
-		models.ItemWhere.Sort.LT(before),
+		models.ItemWhere.ID.LT(before),
 		qm.Limit(limit),
-		qm.OrderBy(models.ItemColumns.Sort+" DESC"),
+		qm.OrderBy(models.ItemColumns.ID+" DESC"),
 	).All(ctx, db)
 	if err != nil {
 		return nil, fmt.Errorf("index error: %w", err)
@@ -36,17 +35,10 @@ func ItemCreate(ctx context.Context, db DB, title, url, thumbnail string) (*mode
 	}
 	defer tx.Commit()
 
-	uuid, err := uuid.NewV7(uuid.NanosecondPrecision)
-	if err != nil {
-		tx.Rollback()
-		return nil, fmt.Errorf("uuid error: %w", err)
-	}
-
 	item := &models.Item{
 		Title:     title,
 		URL:       url,
 		Thumbnail: thumbnail,
-		Sort:      uuid.String(),
 	}
 
 	err = item.Insert(ctx, tx, boil.Infer())
@@ -67,7 +59,7 @@ func ItemCreate(ctx context.Context, db DB, title, url, thumbnail string) (*mode
 	return item, nil
 }
 
-func ItemUpdate(ctx context.Context, db DB, id int64, title, url, thumbnail string) (*models.Item, error) {
+func ItemUpdate(ctx context.Context, db DB, id string, title, url, thumbnail string) (*models.Item, error) {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("begin error: %w", err)
@@ -81,7 +73,7 @@ func ItemUpdate(ctx context.Context, db DB, id int64, title, url, thumbnail stri
 		Thumbnail: thumbnail,
 	}
 
-	_, err = item.Update(ctx, tx, boil.Blacklist(models.ItemColumns.Sort))
+	_, err = item.Update(ctx, tx, boil.Infer())
 	if err != nil {
 		tx.Rollback()
 		return nil, fmt.Errorf("update error: %w", err)
@@ -96,7 +88,7 @@ func ItemUpdate(ctx context.Context, db DB, id int64, title, url, thumbnail stri
 	return item, nil
 }
 
-func ItemDelete(ctx context.Context, db DB, id int64) error {
+func ItemDelete(ctx context.Context, db DB, id string) error {
 	item := &models.Item{
 		ID: id,
 	}

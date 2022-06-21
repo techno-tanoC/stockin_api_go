@@ -23,11 +23,10 @@ import (
 
 // Item is an object representing the database table.
 type Item struct {
-	ID        int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
+	ID        string    `boil:"id" json:"id" toml:"id" yaml:"id"`
 	Title     string    `boil:"title" json:"title" toml:"title" yaml:"title"`
 	URL       string    `boil:"url" json:"url" toml:"url" yaml:"url"`
 	Thumbnail string    `boil:"thumbnail" json:"thumbnail" toml:"thumbnail" yaml:"thumbnail"`
-	Sort      string    `boil:"sort" json:"sort" toml:"sort" yaml:"sort"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 
@@ -40,7 +39,6 @@ var ItemColumns = struct {
 	Title     string
 	URL       string
 	Thumbnail string
-	Sort      string
 	CreatedAt string
 	UpdatedAt string
 }{
@@ -48,7 +46,6 @@ var ItemColumns = struct {
 	Title:     "title",
 	URL:       "url",
 	Thumbnail: "thumbnail",
-	Sort:      "sort",
 	CreatedAt: "created_at",
 	UpdatedAt: "updated_at",
 }
@@ -58,7 +55,6 @@ var ItemTableColumns = struct {
 	Title     string
 	URL       string
 	Thumbnail string
-	Sort      string
 	CreatedAt string
 	UpdatedAt string
 }{
@@ -66,35 +62,11 @@ var ItemTableColumns = struct {
 	Title:     "items.title",
 	URL:       "items.url",
 	Thumbnail: "items.thumbnail",
-	Sort:      "items.sort",
 	CreatedAt: "items.created_at",
 	UpdatedAt: "items.updated_at",
 }
 
 // Generated where
-
-type whereHelperint64 struct{ field string }
-
-func (w whereHelperint64) EQ(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperint64) NEQ(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperint64) LT(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperint64) LTE(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperint64) GT(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperint64) GTE(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-func (w whereHelperint64) IN(slice []int64) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
-}
-func (w whereHelperint64) NIN(slice []int64) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
-}
 
 type whereHelperstring struct{ field string }
 
@@ -141,19 +113,17 @@ func (w whereHelpertime_Time) GTE(x time.Time) qm.QueryMod {
 }
 
 var ItemWhere = struct {
-	ID        whereHelperint64
+	ID        whereHelperstring
 	Title     whereHelperstring
 	URL       whereHelperstring
 	Thumbnail whereHelperstring
-	Sort      whereHelperstring
 	CreatedAt whereHelpertime_Time
 	UpdatedAt whereHelpertime_Time
 }{
-	ID:        whereHelperint64{field: "\"items\".\"id\""},
+	ID:        whereHelperstring{field: "\"items\".\"id\""},
 	Title:     whereHelperstring{field: "\"items\".\"title\""},
 	URL:       whereHelperstring{field: "\"items\".\"url\""},
 	Thumbnail: whereHelperstring{field: "\"items\".\"thumbnail\""},
-	Sort:      whereHelperstring{field: "\"items\".\"sort\""},
 	CreatedAt: whereHelpertime_Time{field: "\"items\".\"created_at\""},
 	UpdatedAt: whereHelpertime_Time{field: "\"items\".\"updated_at\""},
 }
@@ -175,9 +145,9 @@ func (*itemR) NewStruct() *itemR {
 type itemL struct{}
 
 var (
-	itemAllColumns            = []string{"id", "title", "url", "thumbnail", "sort", "created_at", "updated_at"}
-	itemColumnsWithoutDefault = []string{"title", "url", "thumbnail", "sort", "created_at", "updated_at"}
-	itemColumnsWithDefault    = []string{"id"}
+	itemAllColumns            = []string{"id", "title", "url", "thumbnail", "created_at", "updated_at"}
+	itemColumnsWithoutDefault = []string{"id", "title", "url", "thumbnail", "created_at", "updated_at"}
+	itemColumnsWithDefault    = []string{}
 	itemPrimaryKeyColumns     = []string{"id"}
 	itemGeneratedColumns      = []string{}
 )
@@ -473,7 +443,7 @@ func Items(mods ...qm.QueryMod) itemQuery {
 
 // FindItem retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindItem(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*Item, error) {
+func FindItem(ctx context.Context, exec boil.ContextExecutor, iD string, selectCols ...string) (*Item, error) {
 	itemObj := &Item{}
 
 	sel := "*"
@@ -996,7 +966,7 @@ func (o *ItemSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) er
 }
 
 // ItemExists checks if the Item row exists.
-func ItemExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
+func ItemExists(ctx context.Context, exec boil.ContextExecutor, iD string) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from \"items\" where \"id\"=$1 limit 1)"
 

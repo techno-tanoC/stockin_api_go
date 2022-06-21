@@ -2,11 +2,10 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"log"
+	"stockin/domain"
 	"stockin/models"
 
-	"github.com/gofrs/uuid"
 	_ "github.com/lib/pq"
 	"github.com/sethvargo/go-envconfig"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -24,18 +23,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db, err := sql.Open("postgres", conf.Database)
+	db, release, err := domain.BuildDB(conf.Database)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer release()
 
 	for _, item := range items() {
-		uuid, err := uuid.NewV7(uuid.NanosecondPrecision)
-		if err != nil {
-			log.Fatal(err)
-		}
-		item.Sort = uuid.String()
-
 		err = item.Insert(ctx, db, boil.Infer())
 		if err != nil {
 			log.Fatal(err)

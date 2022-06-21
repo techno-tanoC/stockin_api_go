@@ -14,15 +14,17 @@ type Config struct {
 }
 
 func buildMockDB(ctx context.Context) (*domain.MockDB, func(), error) {
+	domain.SetItemInsertHook()
+
 	conf := new(Config)
 	err := envconfig.Process(ctx, conf)
 	if err != nil {
-		return nil, func() {}, err
+		return nil, nil, err
 	}
 
 	rawDB, err := sql.Open("postgres", conf.TestDatabase)
 	if err != nil {
-		return nil, func() {}, err
+		return nil, nil, err
 	}
 
 	tx, err := rawDB.BeginTx(ctx, nil)
