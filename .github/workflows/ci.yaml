@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - go
+  pull_request:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Start containers
+        run: |
+          docker compose -f docker/test/compose.yaml up -d
+
+      - name: Wait database
+        run: |
+          docker compose -f docker/test/compose.yaml exec app dockerize -wait tcp://postgres:5432 -timeout 60s
+
+      - name: Setup database
+        run: |
+          docker compose -f docker/test/compose.yaml exec app make setup
+
+      - name: Build deps
+        run: |
+          docker compose -f docker/test/compose.yaml exec app go mod download -x
+
+      - name: Run tests
+        run: |
+          docker compose -f docker/test/compose.yaml exec app go test -v -count=1 ./...
