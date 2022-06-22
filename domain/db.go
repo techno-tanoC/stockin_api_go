@@ -54,8 +54,8 @@ func BuildDB(database string) (*RealDB, func(), error) {
 	if err != nil {
 		return nil, nil, fmt.Errorf("build db error: %w", err)
 	}
-	db := &RealDB{DB: rawDB}
 
+	db := &RealDB{DB: rawDB}
 	return db, func() {
 		rawDB.Close()
 	}, nil
@@ -67,7 +67,9 @@ func SetItemInsertHook() {
 		if err != nil {
 			return err
 		}
+
 		item.ID = id.String()
+
 		return nil
 	})
 }

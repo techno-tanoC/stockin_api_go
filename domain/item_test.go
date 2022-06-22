@@ -16,6 +16,7 @@ var itemOpt = cmpopts.IgnoreFields(models.Item{}, "ID", "CreatedAt", "UpdatedAt"
 
 func TestItemCreate(t *testing.T) {
 	ctx := context.Background()
+
 	db, release, err := buildMockDB(ctx)
 	if err != nil {
 		t.Fatalf("TestItemCreate: %v", err)
@@ -49,6 +50,7 @@ func TestItemCreate(t *testing.T) {
 
 func TestItemUpdate(t *testing.T) {
 	ctx := context.Background()
+
 	db, release, err := buildMockDB(ctx)
 	if err != nil {
 		t.Fatalf("TestItemCreate: %v", err)
@@ -87,6 +89,7 @@ func TestItemUpdate(t *testing.T) {
 
 func TestItemDelete(t *testing.T) {
 	ctx := context.Background()
+
 	db, release, err := buildMockDB(ctx)
 	if err != nil {
 		t.Fatalf("TestItemCreate: %v", err)
