@@ -1,0 +1,16 @@
+services:
+  app:
+    restart: unless-stopped
+    image: ${IMAGE_TAG}
+    environment:
+      DATABASE: "host=postgres port=5432 user=root password=${DATABASE_PASS} dbname=prod sslmode=disable"
+      TOKEN: ${AUTH_TOKEN}
+    ports:
+      - "36919:3000"
+
+  postgres:
+    restart: unless-stopped
+    image: postgres:13.7
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: ${DATABASE_PASS}
