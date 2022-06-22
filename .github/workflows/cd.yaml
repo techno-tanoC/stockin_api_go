@@ -1,0 +1,76 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - go
+
+jobs:
+  build_and_push:
+    name: Build and Push
+    runs-on: [self-hosted, rutile]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login GitLab
+        run: |
+          echo ${{ secrets.GITLAB_DEPLOY_API_TOKEN }} | docker login registry.gitlab.com --username techno-tanoC --password-stdin
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: registry.gitlab.com/techno-tanoc/stockin_api
+          flavor: |
+            latest=false
+          tags: |
+            type=sha,format=long
+
+      - name: Build and Push
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./docker/release/Dockerfile
+          tags: ${{ steps.meta.outputs.tags }}
+          push: true
+
+  deploy:
+    name: Deploy
+    needs:
+      - build_and_push
+    runs-on: [self-hosted, rutile]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Login GitLab
+        run: |
+          echo ${{ secrets.GITLAB_DEPLOY_API_TOKEN }} | docker login registry.gitlab.com --username techno-tanoC --password-stdin
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: registry.gitlab.com/techno-tanoc/stockin_api
+          flavor: |
+            latest=false
+          tags: |
+            type=sha,format=long
+
+      - name: Deploy
+        env:
+          IMAGE_TAG: ${{ steps.meta.outputs.tags }}
+          DATABASE_PASS: ${{ secrets.DATABASE_PASS }}
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+        run: |
+          docker-compose -f docker/release/compose.yaml up -d db
+          docker-compose -f docker/release/compose.yaml run --rm app dockerize -wait tcp://db:5432 -timeout 60s
+          docker-compose -f docker/release/compose.yaml run --rm app make migrate
+          docker-compose -f docker/release/compose.yaml up -d app
