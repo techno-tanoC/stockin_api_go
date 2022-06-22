@@ -3,15 +3,15 @@ services:
     build: .
     command: sleep infinity
     environment:
-      DATABASE: "host=postgres port=5432 user=root password=pass dbname=dev sslmode=disable"
-      TEST_DATABASE: "host=postgres port=5432 user=root password=pass dbname=test sslmode=disable"
+      DATABASE: "host=db port=5432 user=root password=pass dbname=dev sslmode=disable"
+      TEST_DATABASE: "host=db port=5432 user=root password=pass dbname=test sslmode=disable"
       TOKEN: debug
     init: true
     platform: linux/x86_64
     volumes:
       - ..:/workspace
 
-  postgres:
+  db:
     image: postgres:13.7
     environment:
       POSTGRES_USER: root

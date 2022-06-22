@@ -1,5 +1,5 @@
 [psql]
-host = "postgres"
+host = "db"
 port = 5432
 user = "root"
 pass = "pass"

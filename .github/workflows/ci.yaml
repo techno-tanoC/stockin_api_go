@@ -21,7 +21,7 @@ jobs:
 
       - name: Wait database
         run: |
-          docker compose -f docker/test/compose.yaml exec app dockerize -wait tcp://postgres:5432 -timeout 60s
+          docker compose -f docker/test/compose.yaml exec app dockerize -wait tcp://db:5432 -timeout 60s
 
       - name: Setup database
         run: |

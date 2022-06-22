@@ -8,34 +8,34 @@ seed:
 	go run ./cmd/seed
 
 psql:
-	psql --host=postgres --user=root dev
+	psql --host=$(DATABASE_HOST) --user=root dev
 
 psql-test:
-	psql --host=postgres --user=root test
+	psql --host=$(DATABASE_HOST) --user=root test
 
 create:
-	psql --host=postgres --user=root --command "CREATE DATABASE dev"
+	psql --host=$(DATABASE_HOST) --user=root --command "CREATE DATABASE dev"
 
 create-test:
-	psql --host=postgres --user=root --command "CREATE DATABASE test"
+	psql --host=$(DATABASE_HOST) --user=root --command "CREATE DATABASE test"
 
 drop:
-	psql --host=postgres --user=root --command "DROP DATABASE dev" | true
+	psql --host=$(DATABASE_HOST) --user=root --command "DROP DATABASE dev" | true
 
 drop-test:
-	psql --host=postgres --user=root --command "DROP DATABASE test" | true
+	psql --host=$(DATABASE_HOST) --user=root --command "DROP DATABASE test" | true
 
 apply:
-	cat schema.sql | psqldef --host postgres --user root dev
+	cat schema.sql | psqldef --host $(DATABASE_HOST) --user root dev
 
 apply-test:
-	cat schema.sql | psqldef --host postgres --user root test
+	cat schema.sql | psqldef --host $(DATABASE_HOST) --user root test
 
 setup: drop drop-test create create-test apply apply-test
 
 reset: setup seed
 
 migrate:
-	psql --host=postgres --user=root --command "CREATE DATABASE prod" | true
-	cat schema.sql | psqldef --host postgres --user root prod --dry-run
-	cat schema.sql | psqldef --host postgres --user root prod
+	psql --host=$(DATABASE_HOST) --user=root --command "CREATE DATABASE prod" | true
+	cat schema.sql | psqldef --host $(DATABASE_HOST) --user root prod --dry-run
+	cat schema.sql | psqldef --host $(DATABASE_HOST) --user root prod
