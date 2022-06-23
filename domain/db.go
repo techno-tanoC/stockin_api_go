@@ -63,12 +63,14 @@ func BuildDB(database string) (*RealDB, func(), error) {
 
 func SetItemInsertHook() {
 	models.AddItemHook(boil.BeforeInsertHook, func(_ context.Context, _ boil.ContextExecutor, item *models.Item) error {
-		id, err := uuid.NewV7(uuid.NanosecondPrecision)
-		if err != nil {
-			return err
-		}
+		if item.ID == "" {
+			id, err := uuid.NewV7(uuid.NanosecondPrecision)
+			if err != nil {
+				return err
+			}
 
-		item.ID = id.String()
+			item.ID = id.String()
+		}
 
 		return nil
 	})
