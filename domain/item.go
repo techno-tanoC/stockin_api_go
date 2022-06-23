@@ -99,3 +99,12 @@ func ItemDelete(ctx context.Context, db DB, id string) error {
 
 	return nil
 }
+
+func ItemExport(ctx context.Context, db DB) ([]*models.Item, error) {
+	items, err := models.Items().All(ctx, db)
+	if err != nil {
+		return nil, fmt.Errorf("item all error: %w", err)
+	}
+
+	return items, nil
+}

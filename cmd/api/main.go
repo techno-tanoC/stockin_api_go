@@ -44,6 +44,7 @@ func main() {
 	item.POST("", handler.ItemCreate(db))
 	item.PUT("/:id", handler.ItemUpdate(db))
 	item.DELETE("/:id", handler.ItemDelete(db))
+	item.GET("/export", handler.ItemExport(db))
 
 	title := e.Group("/title")
 	title.POST("/query", handler.TitleQuery)
