@@ -1,7 +1,7 @@
 SCHEMA_FILE ?= schema.sql
 DATABASE_HOST ?= db
 DATABASE_PASS ?= pass
-export PGPASSWORD = pass
+export PGPASSWORD = $(DATABASE_PASS)
 export PGSSLMODE = disable
 
 seed:
