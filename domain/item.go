@@ -47,13 +47,6 @@ func ItemCreate(ctx context.Context, db DB, title, url, thumbnail string) (*mode
 		return nil, fmt.Errorf("insert error: %w", err)
 	}
 
-	// Reload to get the time on the database
-	err = item.Reload(ctx, tx)
-	if err != nil {
-		_ = tx.Rollback()
-		return nil, fmt.Errorf("reload error: %w", err)
-	}
-
 	return item, nil
 }
 

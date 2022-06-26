@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"stockin/models"
+	"time"
 
 	"github.com/gofrs/uuid"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -71,6 +72,9 @@ func SetItemInsertHook() {
 
 			item.ID = id.String()
 		}
+
+		item.CreatedAt = item.CreatedAt.Add(1 * time.Millisecond).Truncate(1 * time.Millisecond)
+		item.UpdatedAt = item.UpdatedAt.Add(1 * time.Millisecond).Truncate(1 * time.Millisecond)
 
 		return nil
 	})
