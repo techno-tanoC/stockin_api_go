@@ -3,6 +3,7 @@ package domain_test
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"stockin/domain"
 	"stockin/models"
 	"testing"
@@ -13,6 +14,159 @@ import (
 )
 
 var itemOpt = cmpopts.IgnoreFields(models.Item{}, "ID", "CreatedAt", "UpdatedAt")
+
+// inserted:      |----------|
+// items   : |----------|
+func TestItemIndex1(t *testing.T) {
+	ctx := context.Background()
+
+	db, release, err := buildMockDB(ctx)
+	if err != nil {
+		t.Fatalf("TestItemIndex: %v", err)
+	}
+	defer release()
+
+	inserted, err := insertItemMany(ctx, db)
+	if err != nil {
+		t.Fatalf("TestItemIndex: %v", err)
+	}
+
+	items, err := domain.ItemIndex(ctx, db, "ffffffff-ffff-ffff-ffff-ffffffffffff", 10)
+	if err != nil {
+		t.Fatalf("TestItemIndex: %v", err)
+	}
+	diff := cmp.Diff(len(items), 10)
+	if diff != "" {
+		t.Fatalf("TestItemIndex: %v", diff)
+	}
+	for i := 0; i < 10; i++ {
+		diff = cmp.Diff(items[i], inserted[i])
+		if diff != "" {
+			t.Fatalf("TestItemIndex: %v", diff)
+		}
+	}
+}
+
+// inserted:      |----------|
+// items   : |--------------------|
+func TestItemIndex2(t *testing.T) {
+	ctx := context.Background()
+
+	db, release, err := buildMockDB(ctx)
+	if err != nil {
+		t.Fatalf("TestItemIndex: %v", err)
+	}
+	defer release()
+
+	inserted, err := insertItemMany(ctx, db)
+	if err != nil {
+		t.Fatalf("TestItemIndex: %v", err)
+	}
+
+	items, err := domain.ItemIndex(ctx, db, "ffffffff-ffff-ffff-ffff-ffffffffffff", 100)
+	if err != nil {
+		t.Fatalf("TestItemIndex: %v", err)
+	}
+	diff := cmp.Diff(len(items), 20)
+	if diff != "" {
+		t.Fatalf("TestItemIndex: %v", diff)
+	}
+	for i := 0; i < 20; i++ {
+		diff = cmp.Diff(items[i], inserted[i])
+		if diff != "" {
+			t.Fatalf("TestItemIndex: %v", diff)
+		}
+	}
+}
+
+// inserted: |----------|
+// items   :      |--|
+func TestItemIndex3(t *testing.T) {
+	ctx := context.Background()
+
+	db, release, err := buildMockDB(ctx)
+	if err != nil {
+		t.Fatalf("TestItemIndex: %v", err)
+	}
+	defer release()
+
+	inserted, err := insertItemMany(ctx, db)
+	if err != nil {
+		t.Fatalf("TestItemIndex: %v", err)
+	}
+
+	items, err := domain.ItemIndex(ctx, db, inserted[9].ID, 5)
+	if err != nil {
+		t.Fatalf("TestItemIndex: %v", err)
+	}
+	diff := cmp.Diff(len(items), 5)
+	if diff != "" {
+		t.Fatalf("TestItemIndex: %v", diff)
+	}
+	for i := 0; i < 5; i++ {
+		diff = cmp.Diff(items[i], inserted[i+10])
+		if diff != "" {
+			t.Fatalf("TestItemIndex: %v", diff)
+		}
+	}
+}
+
+// inserted: |----------|
+// items   :      |----------|
+func TestItemIndex4(t *testing.T) {
+	ctx := context.Background()
+
+	db, release, err := buildMockDB(ctx)
+	if err != nil {
+		t.Fatalf("TestItemIndex: %v", err)
+	}
+	defer release()
+
+	inserted, err := insertItemMany(ctx, db)
+	if err != nil {
+		t.Fatalf("TestItemIndex: %v", err)
+	}
+
+	items, err := domain.ItemIndex(ctx, db, inserted[9].ID, 100)
+	if err != nil {
+		t.Fatalf("TestItemIndex: %v", err)
+	}
+	diff := cmp.Diff(len(items), 10)
+	if diff != "" {
+		t.Fatalf("TestItemIndex: %v", diff)
+	}
+	for i := 0; i < 10; i++ {
+		diff = cmp.Diff(items[i], inserted[i+10])
+		if diff != "" {
+			t.Fatalf("TestItemIndex: %v", diff)
+		}
+	}
+}
+
+// inserted: |----------|
+// items   :                |----------|
+func TestItemIndex5(t *testing.T) {
+	ctx := context.Background()
+
+	db, release, err := buildMockDB(ctx)
+	if err != nil {
+		t.Fatalf("TestItemIndex: %v", err)
+	}
+	defer release()
+
+	_, err = insertItemMany(ctx, db)
+	if err != nil {
+		t.Fatalf("TestItemIndex: %v", err)
+	}
+	items, err := domain.ItemIndex(ctx, db, "00000000-0000-0000-0000-000000000000", 100)
+	if err != nil {
+		t.Fatalf("TestItemIndex: %v", err)
+	}
+	diff := cmp.Diff(len(items), 0)
+	if diff != "" {
+		t.Fatalf("TestItemIndex: %v", diff)
+	}
+}
 
 func TestItemCreate(t *testing.T) {
 	ctx := context.Background()
@@ -125,4 +279,19 @@ func insertItem(ctx context.Context, db domain.DB, title, url, thumbnail string)
 	}
 
 	return item, nil
+}
+
+func insertItemMany(ctx context.Context, db domain.DB) ([]*models.Item, error) {
+	items := make([]*models.Item, 20)
+	for i := 0; i < 20; i++ {
+		title := fmt.Sprintf("example%d", i)
+		url := fmt.Sprintf("https://example%d.com/", i)
+		thumbnail := fmt.Sprintf("https://example%d.com/thumbnail.jpg", i)
+		item, err := insertItem(ctx, db, title, url, thumbnail)
+		if err != nil {
+			return nil, err
+		}
+		items[19-i] = item
+	}
+	return items, nil
 }
