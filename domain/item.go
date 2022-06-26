@@ -33,7 +33,7 @@ func ItemCreate(ctx context.Context, db DB, title, url, thumbnail string) (*mode
 	if err != nil {
 		return nil, fmt.Errorf("begin error: %w", err)
 	}
-	defer tx.Commit()
+	defer func() { _ = tx.Commit() }()
 
 	item := &models.Item{
 		Title:     title,
@@ -43,7 +43,7 @@ func ItemCreate(ctx context.Context, db DB, title, url, thumbnail string) (*mode
 
 	err = item.Insert(ctx, tx, boil.Infer())
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return nil, fmt.Errorf("insert error: %w", err)
 	}
 
@@ -52,7 +52,7 @@ func ItemCreate(ctx context.Context, db DB, title, url, thumbnail string) (*mode
 	// https://dev.mysql.com/doc/refman/8.0/ja/fractional-seconds.html
 	err = item.Reload(ctx, tx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return nil, fmt.Errorf("reload error: %w", err)
 	}
 
@@ -64,7 +64,7 @@ func ItemUpdate(ctx context.Context, db DB, id string, title, url, thumbnail str
 	if err != nil {
 		return nil, fmt.Errorf("begin error: %w", err)
 	}
-	defer tx.Commit()
+	defer func() { _ = tx.Commit() }()
 
 	item := &models.Item{
 		ID:        id,
@@ -75,13 +75,13 @@ func ItemUpdate(ctx context.Context, db DB, id string, title, url, thumbnail str
 
 	_, err = item.Update(ctx, tx, boil.Infer())
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return nil, fmt.Errorf("update error: %w", err)
 	}
 
 	err = item.Reload(ctx, tx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return nil, fmt.Errorf("reload error: %w", err)
 	}
 

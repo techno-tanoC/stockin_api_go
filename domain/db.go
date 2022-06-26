@@ -57,7 +57,7 @@ func BuildDB(database string) (*RealDB, func(), error) {
 
 	db := &RealDB{DB: rawDB}
 	return db, func() {
-		rawDB.Close()
+		_ = rawDB.Close()
 	}, nil
 }
 

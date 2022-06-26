@@ -30,13 +30,13 @@ func buildMockDB(ctx context.Context) (*domain.MockDB, func(), error) {
 	tx, err := rawDB.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, func() {
-			defer rawDB.Close()
+			_ = rawDB.Close()
 		}, err
 	}
 
 	db := &domain.MockDB{&domain.MockTx{tx}}
 	return db, func() {
-		defer rawDB.Close()
-		defer tx.Rollback()
+		_ = rawDB.Close()
+		_ = tx.Rollback()
 	}, nil
 }
