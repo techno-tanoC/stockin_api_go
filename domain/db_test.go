@@ -14,8 +14,6 @@ type Config struct {
 }
 
 func buildMockDB(ctx context.Context) (*domain.MockDB, func(), error) {
-	domain.SetItemInsertHook()
-
 	conf := new(Config)
 	err := envconfig.Process(ctx, conf)
 	if err != nil {

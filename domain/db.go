@@ -11,6 +11,24 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
+func init() {
+	models.AddItemHook(boil.BeforeInsertHook, func(_ context.Context, _ boil.ContextExecutor, item *models.Item) error {
+		if item.ID == "" {
+			id, err := uuid.NewV7(uuid.NanosecondPrecision)
+			if err != nil {
+				return err
+			}
+
+			item.ID = id.String()
+		}
+
+		item.CreatedAt = item.CreatedAt.Add(1 * time.Millisecond).Truncate(1 * time.Millisecond)
+		item.UpdatedAt = item.UpdatedAt.Add(1 * time.Millisecond).Truncate(1 * time.Millisecond)
+
+		return nil
+	})
+}
+
 type TxBeginner interface {
 	BeginTx(context.Context, *sql.TxOptions) (boil.ContextTransactor, error)
 }
@@ -49,7 +67,6 @@ func (db *MockDB) BeginTx(ctx context.Context, opts *sql.TxOptions) (boil.Contex
 }
 
 func BuildDB(database string) (*RealDB, func(), error) {
-	SetItemInsertHook()
 
 	rawDB, err := sql.Open("postgres", database)
 	if err != nil {
@@ -60,22 +77,4 @@ func BuildDB(database string) (*RealDB, func(), error) {
 	return db, func() {
 		_ = rawDB.Close()
 	}, nil
-}
-
-func SetItemInsertHook() {
-	models.AddItemHook(boil.BeforeInsertHook, func(_ context.Context, _ boil.ContextExecutor, item *models.Item) error {
-		if item.ID == "" {
-			id, err := uuid.NewV7(uuid.NanosecondPrecision)
-			if err != nil {
-				return err
-			}
-
-			item.ID = id.String()
-		}
-
-		item.CreatedAt = item.CreatedAt.Add(1 * time.Millisecond).Truncate(1 * time.Millisecond)
-		item.UpdatedAt = item.UpdatedAt.Add(1 * time.Millisecond).Truncate(1 * time.Millisecond)
-
-		return nil
-	})
 }
