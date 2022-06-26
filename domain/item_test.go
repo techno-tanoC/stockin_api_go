@@ -34,7 +34,7 @@ func TestItemCreate(t *testing.T) {
 		Thumbnail: "https://example.com/thumbnail.jpg",
 	}, itemOpt)
 	if diff != "" {
-		t.Fatalf("TestItemCreate: %v", err)
+		t.Fatalf("TestItemCreate: %v", diff)
 	}
 
 	i, err := models.FindItem(ctx, db, item.ID)

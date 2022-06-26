@@ -48,8 +48,6 @@ func ItemCreate(ctx context.Context, db DB, title, url, thumbnail string) (*mode
 	}
 
 	// Reload to get the time on the database
-	// MySQL rounds the time
-	// https://dev.mysql.com/doc/refman/8.0/ja/fractional-seconds.html
 	err = item.Reload(ctx, tx)
 	if err != nil {
 		_ = tx.Rollback()
