@@ -98,3 +98,21 @@ func ItemExport(ctx context.Context, db DB) ([]*models.Item, error) {
 
 	return items, nil
 }
+
+func ItemImport(ctx context.Context, db DB, items []*models.Item) error {
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("begin error: %w", err)
+	}
+	defer func() { _ = tx.Commit() }()
+
+	for _, item := range items {
+		err = item.Insert(ctx, db, boil.Infer())
+		if err != nil {
+			_ = tx.Rollback()
+			return fmt.Errorf("insert error: %w", err)
+		}
+	}
+
+	return nil
+}

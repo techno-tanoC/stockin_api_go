@@ -7,7 +7,9 @@ import (
 	"stockin/domain"
 	"stockin/models"
 	"testing"
+	"time"
 
+	"github.com/gofrs/uuid"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -298,6 +300,49 @@ func TestItemExport(t *testing.T) {
 		if diff != "" {
 			t.Fatalf("TestItemExport: %v", diff)
 		}
+	}
+}
+
+func TestItemImport(t *testing.T) {
+	ctx := context.Background()
+
+	db, release, err := buildMockDB(ctx)
+	if err != nil {
+		t.Fatalf("TestItemImport: %v", err)
+	}
+	defer release()
+
+	params := []*models.Item{}
+	for i := 0; i < 20; i++ {
+		id, err := uuid.NewV7(uuid.NanosecondPrecision)
+		if err != nil {
+			t.Fatalf("TestItemImport: %v", err)
+		}
+
+		p := &models.Item{
+			ID:        id.String(),
+			Title:     fmt.Sprintf("example%d", i),
+			URL:       fmt.Sprintf("https://example%d.com/", i),
+			Thumbnail: fmt.Sprintf("https://example%d.com/thumbnail.jpg", i),
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		}
+		params = append(params, p)
+	}
+
+	err = domain.ItemImport(ctx, db, params)
+	if err != nil {
+		t.Fatalf("TestItemImport: %v", err)
+	}
+
+	items, err := domain.ItemExport(ctx, db)
+	if err != nil {
+		t.Fatalf("TestItemImport: %v", err)
+	}
+
+	diff := cmp.Diff(items, params)
+	if diff != "" {
+		t.Fatalf("TestItemImport: %v", diff)
 	}
 }
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"stockin/domain"
+	"stockin/models"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -118,6 +119,29 @@ func ItemExport(db domain.DB) echo.HandlerFunc {
 		err = rawJson(c, items)
 		if err != nil {
 			return fmt.Errorf("json error: %w", err)
+		}
+
+		return nil
+	}
+}
+
+func ItemImport(db domain.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		params := new([]*models.Item)
+		err := c.Bind(params)
+		if err != nil {
+			return fmt.Errorf("bind error: %w", err)
+		}
+
+		ctx := context.Background()
+		err = domain.ItemImport(ctx, db, *params)
+		if err != nil {
+			return fmt.Errorf("item import error: %w", err)
+		}
+
+		err = noContent(c)
+		if err != nil {
+			return fmt.Errorf("no content error: %w", err)
 		}
 
 		return nil
