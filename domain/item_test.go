@@ -177,7 +177,11 @@ func TestItemCreate(t *testing.T) {
 	}
 	defer release()
 
-	item, err := domain.ItemCreate(ctx, db, "test", "https://example.com/", "https://example.com/thumbnail.jpg")
+	item, err := domain.ItemCreate(ctx, db, &domain.ItemParams{
+		"test",
+		"https://example.com/",
+		"https://example.com/thumbnail.jpg",
+	})
 	if err != nil {
 		t.Fatalf("TestItemCreate: %v", err)
 	}
@@ -216,7 +220,11 @@ func TestItemUpdate(t *testing.T) {
 		t.Fatalf("TestItemUpdate: %v", err)
 	}
 
-	updated, err := domain.ItemUpdate(ctx, db, item.ID, "test2", "https://example2.com/", "https://example2.com/thumbnail.jpg")
+	updated, err := domain.ItemUpdate(ctx, db, item.ID, &domain.ItemParams{
+		"test2",
+		"https://example2.com/",
+		"https://example2.com/thumbnail.jpg",
+	})
 	if err != nil {
 		t.Fatalf("TestItemUpdate: %v", err)
 	}

@@ -28,7 +28,7 @@ func ItemIndex(ctx context.Context, db DB, before string, limit int) ([]*models.
 	return items, nil
 }
 
-func ItemCreate(ctx context.Context, db DB, title, url, thumbnail string) (*models.Item, error) {
+func ItemCreate(ctx context.Context, db DB, params *ItemParams) (*models.Item, error) {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("begin error: %w", err)
@@ -36,9 +36,9 @@ func ItemCreate(ctx context.Context, db DB, title, url, thumbnail string) (*mode
 	defer func() { _ = tx.Commit() }()
 
 	item := &models.Item{
-		Title:     title,
-		URL:       url,
-		Thumbnail: thumbnail,
+		Title:     params.Title,
+		URL:       params.URL,
+		Thumbnail: params.Thumbnail,
 	}
 
 	err = item.Insert(ctx, tx, boil.Infer())
@@ -50,7 +50,7 @@ func ItemCreate(ctx context.Context, db DB, title, url, thumbnail string) (*mode
 	return item, nil
 }
 
-func ItemUpdate(ctx context.Context, db DB, id string, title, url, thumbnail string) (*models.Item, error) {
+func ItemUpdate(ctx context.Context, db DB, id string, params *ItemParams) (*models.Item, error) {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("begin error: %w", err)
@@ -59,9 +59,9 @@ func ItemUpdate(ctx context.Context, db DB, id string, title, url, thumbnail str
 
 	item := &models.Item{
 		ID:        id,
-		Title:     title,
-		URL:       url,
-		Thumbnail: thumbnail,
+		Title:     params.Title,
+		URL:       params.URL,
+		Thumbnail: params.Thumbnail,
 	}
 
 	_, err = item.Update(ctx, tx, boil.Infer())

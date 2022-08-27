@@ -9,12 +9,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type ItemParams struct {
-	Title     string `json:"title"`
-	URL       string `json:"url"`
-	Thumbnail string `json:"thumbnail"`
-}
-
 func ItemIndex(db domain.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		before := c.QueryParam("before")
@@ -48,14 +42,14 @@ func ItemIndex(db domain.DB) echo.HandlerFunc {
 
 func ItemCreate(db domain.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		params := new(ItemParams)
+		params := new(domain.ItemParams)
 		err := c.Bind(params)
 		if err != nil {
 			return fmt.Errorf("bind error: %w", err)
 		}
 
 		ctx := context.Background()
-		item, err := domain.ItemCreate(ctx, db, params.Title, params.URL, params.Thumbnail)
+		item, err := domain.ItemCreate(ctx, db, params)
 		if err != nil {
 			return fmt.Errorf("insert error: %w", err)
 		}
@@ -73,14 +67,14 @@ func ItemUpdate(db domain.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id := c.Param("id")
 
-		params := new(ItemParams)
+		params := new(domain.ItemParams)
 		err := c.Bind(params)
 		if err != nil {
 			return fmt.Errorf("bind error: %w", err)
 		}
 
 		ctx := context.Background()
-		item, err := domain.ItemUpdate(ctx, db, id, params.Title, params.URL, params.Thumbnail)
+		item, err := domain.ItemUpdate(ctx, db, id, params)
 		if err != nil {
 			return fmt.Errorf("item update error: %w", err)
 		}
