@@ -266,6 +266,33 @@ func TestItemDelete(t *testing.T) {
 	}
 }
 
+func TestItemExport(t *testing.T) {
+	ctx := context.Background()
+
+	db, release, err := buildMockDB(ctx)
+	if err != nil {
+		t.Fatalf("TestItemExport: %v", err)
+	}
+	defer release()
+
+	inserted, err := insertItemMany(ctx, db)
+	if err != nil {
+		t.Fatalf("TestItemExport: %v", err)
+	}
+
+	items, err := domain.ItemExport(ctx, db)
+	if err != nil {
+		t.Fatalf("TestItemExport: %v", err)
+	}
+
+	for i, item := range items {
+		diff := cmp.Diff(item, inserted[19-i])
+		if diff != "" {
+			t.Fatalf("TestItemExport: %v", diff)
+		}
+	}
+}
+
 func insertItem(ctx context.Context, db domain.DB, title, url, thumbnail string) (*models.Item, error) {
 	item := &models.Item{
 		Title:     title,
