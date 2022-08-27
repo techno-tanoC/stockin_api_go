@@ -29,21 +29,14 @@ func ItemIndex(ctx context.Context, db DB, before string, limit int) ([]*models.
 }
 
 func ItemCreate(ctx context.Context, db DB, params *ItemParams) (*models.Item, error) {
-	tx, err := db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, fmt.Errorf("begin error: %w", err)
-	}
-	defer func() { _ = tx.Commit() }()
-
 	item := &models.Item{
 		Title:     params.Title,
 		URL:       params.URL,
 		Thumbnail: params.Thumbnail,
 	}
 
-	err = item.Insert(ctx, tx, boil.Infer())
+	err := item.Insert(ctx, db, boil.Infer())
 	if err != nil {
-		_ = tx.Rollback()
 		return nil, fmt.Errorf("insert error: %w", err)
 	}
 
