@@ -18,6 +18,10 @@ func json(c echo.Context, d interface{}) error {
 	return c.JSON(http.StatusOK, Data{d})
 }
 
+func rawJson(c echo.Context, d interface{}) error {
+	return c.JSON(http.StatusOK, d)
+}
+
 func noContent(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }

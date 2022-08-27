@@ -121,7 +121,7 @@ func ItemExport(db domain.DB) echo.HandlerFunc {
 			return fmt.Errorf("item export error: %w", err)
 		}
 
-		err = json(c, items)
+		err = rawJson(c, items)
 		if err != nil {
 			return fmt.Errorf("json error: %w", err)
 		}
