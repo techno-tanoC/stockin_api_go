@@ -97,5 +97,11 @@ func ItemExport(ctx context.Context, db DB) ([]*models.Item, error) {
 		return nil, fmt.Errorf("item all error: %w", err)
 	}
 
+	// > Array and slice values encode as JSON arrays, except that []byte encodes as a base64-encoded string, and a nil slice encodes as the null JSON value.
+	// > https://pkg.go.dev/encoding/json#Marshal
+	if len(items) == 0 {
+		items = []*models.Item{}
+	}
+
 	return items, nil
 }
