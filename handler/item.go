@@ -29,7 +29,7 @@ func ItemIndex(db domain.DB) echo.HandlerFunc {
 		ctx := context.Background()
 		items, err := domain.ItemIndex(ctx, db, before, limit)
 		if err != nil {
-			return fmt.Errorf("insert error: %w", err)
+			return fmt.Errorf("item index error: %w", err)
 		}
 
 		err = json(c, items)
@@ -52,7 +52,7 @@ func ItemCreate(db domain.DB) echo.HandlerFunc {
 		ctx := context.Background()
 		item, err := domain.ItemCreate(ctx, db, params)
 		if err != nil {
-			return fmt.Errorf("insert error: %w", err)
+			return fmt.Errorf("item create error: %w", err)
 		}
 
 		err = json(c, item)

@@ -16,7 +16,7 @@ func ItemIndex(ctx context.Context, db DB, before string, limit int) ([]*models.
 		qm.OrderBy(models.ItemColumns.ID+" DESC"),
 	).All(ctx, db)
 	if err != nil {
-		return nil, fmt.Errorf("index error: %w", err)
+		return nil, fmt.Errorf("item all error: %w", err)
 	}
 
 	// > Array and slice values encode as JSON arrays, except that []byte encodes as a base64-encoded string, and a nil slice encodes as the null JSON value.
@@ -37,7 +37,7 @@ func ItemCreate(ctx context.Context, db DB, params *ItemParams) (*models.Item, e
 
 	err := item.Insert(ctx, db, boil.Infer())
 	if err != nil {
-		return nil, fmt.Errorf("insert error: %w", err)
+		return nil, fmt.Errorf("item insert error: %w", err)
 	}
 
 	return item, nil
@@ -60,13 +60,13 @@ func ItemUpdate(ctx context.Context, db DB, id string, params *ItemParams) (*mod
 	_, err = item.Update(ctx, tx, boil.Infer())
 	if err != nil {
 		_ = tx.Rollback()
-		return nil, fmt.Errorf("update error: %w", err)
+		return nil, fmt.Errorf("item update error: %w", err)
 	}
 
 	err = item.Reload(ctx, tx)
 	if err != nil {
 		_ = tx.Rollback()
-		return nil, fmt.Errorf("reload error: %w", err)
+		return nil, fmt.Errorf("item reload error: %w", err)
 	}
 
 	return item, nil
@@ -78,7 +78,7 @@ func ItemDelete(ctx context.Context, db DB, id string) error {
 	}
 	_, err := item.Delete(ctx, db)
 	if err != nil {
-		return fmt.Errorf("delete error: %w", err)
+		return fmt.Errorf("item delete error: %w", err)
 	}
 
 	return nil
@@ -110,7 +110,7 @@ func ItemImport(ctx context.Context, db DB, items []*models.Item) error {
 		err = item.Insert(ctx, db, boil.Infer())
 		if err != nil {
 			_ = tx.Rollback()
-			return fmt.Errorf("insert error: %w", err)
+			return fmt.Errorf("item insert error: %w", err)
 		}
 	}
 
