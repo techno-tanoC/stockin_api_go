@@ -16,8 +16,8 @@ EOF
 RUN <<EOF
   go install github.com/cosmtrek/air@latest
 
-  go install github.com/volatiletech/sqlboiler/v4@v4.10.2
-  go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql@v4.10.2
+  go install github.com/volatiletech/sqlboiler/v4@v4.13.0
+  go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql@v4.13.0
 
   go install github.com/kisielk/errcheck@latest
   go install golang.org/x/tools/gopls@latest
