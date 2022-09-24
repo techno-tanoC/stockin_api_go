@@ -1,17 +1,19 @@
 services:
   app:
     build:
-      context: ../
+      context: ./
       dockerfile: docker/dev/Dockerfile
-    command: sleep infinity
+    command: air
     environment:
       DATABASE: "host=db port=5432 user=root password=pass dbname=dev sslmode=disable"
       TEST_DATABASE: "host=db port=5432 user=root password=pass dbname=test sslmode=disable"
       TOKEN: debug
     init: true
     platform: linux/x86_64
+    ports:
+      - "3000:3000"
     volumes:
-      - ..:/workspace
+      - .:/workspace
 
   db:
     image: postgres:13.7
