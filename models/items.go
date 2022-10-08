@@ -23,47 +23,52 @@ import (
 
 // Item is an object representing the database table.
 type Item struct {
-	ID        string    `boil:"id" json:"id" toml:"id" yaml:"id"`
-	Title     string    `boil:"title" json:"title" toml:"title" yaml:"title"`
-	URL       string    `boil:"url" json:"url" toml:"url" yaml:"url"`
-	Thumbnail string    `boil:"thumbnail" json:"thumbnail" toml:"thumbnail" yaml:"thumbnail"`
-	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	ID         string    `boil:"id" json:"id" toml:"id" yaml:"id"`
+	Title      string    `boil:"title" json:"title" toml:"title" yaml:"title"`
+	URL        string    `boil:"url" json:"url" toml:"url" yaml:"url"`
+	Thumbnail  string    `boil:"thumbnail" json:"thumbnail" toml:"thumbnail" yaml:"thumbnail"`
+	IsArchived bool      `boil:"is_archived" json:"is_archived" toml:"is_archived" yaml:"is_archived"`
+	CreatedAt  time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	UpdatedAt  time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 
 	R *itemR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L itemL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var ItemColumns = struct {
-	ID        string
-	Title     string
-	URL       string
-	Thumbnail string
-	CreatedAt string
-	UpdatedAt string
+	ID         string
+	Title      string
+	URL        string
+	Thumbnail  string
+	IsArchived string
+	CreatedAt  string
+	UpdatedAt  string
 }{
-	ID:        "id",
-	Title:     "title",
-	URL:       "url",
-	Thumbnail: "thumbnail",
-	CreatedAt: "created_at",
-	UpdatedAt: "updated_at",
+	ID:         "id",
+	Title:      "title",
+	URL:        "url",
+	Thumbnail:  "thumbnail",
+	IsArchived: "is_archived",
+	CreatedAt:  "created_at",
+	UpdatedAt:  "updated_at",
 }
 
 var ItemTableColumns = struct {
-	ID        string
-	Title     string
-	URL       string
-	Thumbnail string
-	CreatedAt string
-	UpdatedAt string
+	ID         string
+	Title      string
+	URL        string
+	Thumbnail  string
+	IsArchived string
+	CreatedAt  string
+	UpdatedAt  string
 }{
-	ID:        "items.id",
-	Title:     "items.title",
-	URL:       "items.url",
-	Thumbnail: "items.thumbnail",
-	CreatedAt: "items.created_at",
-	UpdatedAt: "items.updated_at",
+	ID:         "items.id",
+	Title:      "items.title",
+	URL:        "items.url",
+	Thumbnail:  "items.thumbnail",
+	IsArchived: "items.is_archived",
+	CreatedAt:  "items.created_at",
+	UpdatedAt:  "items.updated_at",
 }
 
 // Generated where
@@ -91,6 +96,15 @@ func (w whereHelperstring) NIN(slice []string) qm.QueryMod {
 	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
 }
 
+type whereHelperbool struct{ field string }
+
+func (w whereHelperbool) EQ(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
+func (w whereHelperbool) NEQ(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
+func (w whereHelperbool) LT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
+func (w whereHelperbool) LTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
+func (w whereHelperbool) GT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
+func (w whereHelperbool) GTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
+
 type whereHelpertime_Time struct{ field string }
 
 func (w whereHelpertime_Time) EQ(x time.Time) qm.QueryMod {
@@ -113,19 +127,21 @@ func (w whereHelpertime_Time) GTE(x time.Time) qm.QueryMod {
 }
 
 var ItemWhere = struct {
-	ID        whereHelperstring
-	Title     whereHelperstring
-	URL       whereHelperstring
-	Thumbnail whereHelperstring
-	CreatedAt whereHelpertime_Time
-	UpdatedAt whereHelpertime_Time
+	ID         whereHelperstring
+	Title      whereHelperstring
+	URL        whereHelperstring
+	Thumbnail  whereHelperstring
+	IsArchived whereHelperbool
+	CreatedAt  whereHelpertime_Time
+	UpdatedAt  whereHelpertime_Time
 }{
-	ID:        whereHelperstring{field: "\"items\".\"id\""},
-	Title:     whereHelperstring{field: "\"items\".\"title\""},
-	URL:       whereHelperstring{field: "\"items\".\"url\""},
-	Thumbnail: whereHelperstring{field: "\"items\".\"thumbnail\""},
-	CreatedAt: whereHelpertime_Time{field: "\"items\".\"created_at\""},
-	UpdatedAt: whereHelpertime_Time{field: "\"items\".\"updated_at\""},
+	ID:         whereHelperstring{field: "\"items\".\"id\""},
+	Title:      whereHelperstring{field: "\"items\".\"title\""},
+	URL:        whereHelperstring{field: "\"items\".\"url\""},
+	Thumbnail:  whereHelperstring{field: "\"items\".\"thumbnail\""},
+	IsArchived: whereHelperbool{field: "\"items\".\"is_archived\""},
+	CreatedAt:  whereHelpertime_Time{field: "\"items\".\"created_at\""},
+	UpdatedAt:  whereHelpertime_Time{field: "\"items\".\"updated_at\""},
 }
 
 // ItemRels is where relationship names are stored.
@@ -145,8 +161,8 @@ func (*itemR) NewStruct() *itemR {
 type itemL struct{}
 
 var (
-	itemAllColumns            = []string{"id", "title", "url", "thumbnail", "created_at", "updated_at"}
-	itemColumnsWithoutDefault = []string{"id", "title", "url", "thumbnail", "created_at", "updated_at"}
+	itemAllColumns            = []string{"id", "title", "url", "thumbnail", "is_archived", "created_at", "updated_at"}
+	itemColumnsWithoutDefault = []string{"id", "title", "url", "thumbnail", "is_archived", "created_at", "updated_at"}
 	itemColumnsWithDefault    = []string{}
 	itemPrimaryKeyColumns     = []string{"id"}
 	itemGeneratedColumns      = []string{}

@@ -568,7 +568,7 @@ func testItemsSelect(t *testing.T) {
 }
 
 var (
-	itemDBTypes = map[string]string{`ID`: `uuid`, `Title`: `text`, `URL`: `text`, `Thumbnail`: `text`, `CreatedAt`: `timestamp with time zone`, `UpdatedAt`: `timestamp with time zone`}
+	itemDBTypes = map[string]string{`ID`: `uuid`, `Title`: `text`, `URL`: `text`, `Thumbnail`: `text`, `IsArchived`: `boolean`, `CreatedAt`: `timestamp with time zone`, `UpdatedAt`: `timestamp with time zone`}
 	_           = bytes.MinRead
 )
 
