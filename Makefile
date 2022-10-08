@@ -4,6 +4,9 @@ DATABASE_PASS ?= pass
 export PGPASSWORD = $(DATABASE_PASS)
 export PGSSLMODE = disable
 
+gen:
+	sqlboiler psql --wipe
+
 seed:
 	go run ./cmd/seed
 
