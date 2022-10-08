@@ -13,7 +13,8 @@ type Thumbnail struct {
 }
 
 type ItemParams struct {
-	Title     string `json:"title"`
-	URL       string `json:"url"`
-	Thumbnail string `json:"thumbnail"`
+	Title      string `json:"title"`
+	URL        string `json:"url"`
+	Thumbnail  string `json:"thumbnail"`
+	IsArchived bool   `json:"is_archived"`
 }

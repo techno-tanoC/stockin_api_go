@@ -183,15 +183,17 @@ func TestItemCreate(t *testing.T) {
 		"test",
 		"https://example.com/",
 		"https://example.com/thumbnail.jpg",
+		false,
 	})
 	if err != nil {
 		t.Fatalf("TestItemCreate: %v", err)
 	}
 
 	diff := cmp.Diff(item, &models.Item{
-		Title:     "test",
-		URL:       "https://example.com/",
-		Thumbnail: "https://example.com/thumbnail.jpg",
+		Title:      "test",
+		URL:        "https://example.com/",
+		Thumbnail:  "https://example.com/thumbnail.jpg",
+		IsArchived: false,
 	}, itemOpt)
 	if diff != "" {
 		t.Fatalf("TestItemCreate: %v", diff)
@@ -217,7 +219,7 @@ func TestItemUpdate(t *testing.T) {
 	}
 	defer release()
 
-	item, err := insertItem(ctx, db, "test", "https://example.com/", "https://example.com/thumbnail.jpg")
+	item, err := insertItem(ctx, db, "test", "https://example.com/", "https://example.com/thumbnail.jpg", false)
 	if err != nil {
 		t.Fatalf("TestItemUpdate: %v", err)
 	}
@@ -226,15 +228,17 @@ func TestItemUpdate(t *testing.T) {
 		"test2",
 		"https://example2.com/",
 		"https://example2.com/thumbnail.jpg",
+		true,
 	})
 	if err != nil {
 		t.Fatalf("TestItemUpdate: %v", err)
 	}
 
 	diff := cmp.Diff(updated, &models.Item{
-		Title:     "test2",
-		URL:       "https://example2.com/",
-		Thumbnail: "https://example2.com/thumbnail.jpg",
+		Title:      "test2",
+		URL:        "https://example2.com/",
+		Thumbnail:  "https://example2.com/thumbnail.jpg",
+		IsArchived: true,
 	}, itemOpt)
 	if diff != "" {
 		t.Fatalf("TestItemUpdate: %v", diff)
@@ -260,7 +264,7 @@ func TestItemDelete(t *testing.T) {
 	}
 	defer release()
 
-	item, err := insertItem(ctx, db, "test", "https://example.com/", "https://example.com/thumbnail.jpg")
+	item, err := insertItem(ctx, db, "test", "https://example.com/", "https://example.com/thumbnail.jpg", false)
 	if err != nil {
 		t.Fatalf("TestItemDelete: %v", err)
 	}
@@ -346,11 +350,12 @@ func TestItemImport(t *testing.T) {
 	}
 }
 
-func insertItem(ctx context.Context, db domain.DB, title, url, thumbnail string) (*models.Item, error) {
+func insertItem(ctx context.Context, db domain.DB, title, url, thumbnail string, isArchived bool) (*models.Item, error) {
 	item := &models.Item{
-		Title:     title,
-		URL:       url,
-		Thumbnail: thumbnail,
+		Title:      title,
+		URL:        url,
+		Thumbnail:  thumbnail,
+		IsArchived: isArchived,
 	}
 
 	err := item.Insert(ctx, db, boil.Infer())
@@ -367,7 +372,7 @@ func insertItemMany(ctx context.Context, db domain.DB) ([]*models.Item, error) {
 		title := fmt.Sprintf("example%d", i)
 		url := fmt.Sprintf("https://example%d.com/", i)
 		thumbnail := fmt.Sprintf("https://example%d.com/thumbnail.jpg", i)
-		item, err := insertItem(ctx, db, title, url, thumbnail)
+		item, err := insertItem(ctx, db, title, url, thumbnail, false)
 		if err != nil {
 			return nil, err
 		}

@@ -30,9 +30,10 @@ func ItemIndex(ctx context.Context, db DB, before string, limit int) ([]*models.
 
 func ItemCreate(ctx context.Context, db DB, params *ItemParams) (*models.Item, error) {
 	item := &models.Item{
-		Title:     params.Title,
-		URL:       params.URL,
-		Thumbnail: params.Thumbnail,
+		Title:      params.Title,
+		URL:        params.URL,
+		Thumbnail:  params.Thumbnail,
+		IsArchived: params.IsArchived,
 	}
 
 	err := item.Insert(ctx, db, boil.Infer())
@@ -51,10 +52,11 @@ func ItemUpdate(ctx context.Context, db DB, id string, params *ItemParams) (*mod
 	defer func() { _ = tx.Commit() }()
 
 	item := &models.Item{
-		ID:        id,
-		Title:     params.Title,
-		URL:       params.URL,
-		Thumbnail: params.Thumbnail,
+		ID:         id,
+		Title:      params.Title,
+		URL:        params.URL,
+		Thumbnail:  params.Thumbnail,
+		IsArchived: params.IsArchived,
 	}
 
 	_, err = item.Update(ctx, tx, boil.Infer())
