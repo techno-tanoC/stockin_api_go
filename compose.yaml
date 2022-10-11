@@ -4,6 +4,8 @@ services:
       context: ./
       dockerfile: docker/dev/Dockerfile
     command: air
+    depends_on:
+      - db
     environment:
       DATABASE: "host=db port=5432 user=root password=pass dbname=dev sslmode=disable"
       TEST_DATABASE: "host=db port=5432 user=root password=pass dbname=test sslmode=disable"
