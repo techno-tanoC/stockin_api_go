@@ -10,6 +10,13 @@ gen:
 seed:
 	go run ./cmd/seed
 
+lint:
+	go vet ./...
+	errcheck --verbose ./cmd/... ./domain/... ./handler/...
+
+test:
+	go test -v -count=1 ./...
+
 psql:
 	psql --host=$(DATABASE_HOST) --user=root dev
 
