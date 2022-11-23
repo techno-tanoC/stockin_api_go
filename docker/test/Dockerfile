@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM golang:1.18.3
+FROM golang:1.19.3
 WORKDIR /workspace
 
 RUN <<EOF
