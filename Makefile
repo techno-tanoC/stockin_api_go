@@ -8,6 +8,9 @@ start:
 
 seed:
 
+gen:
+	sqlc generate
+
 psql:
 	psql --host=$(DATABASE_HOST) --user=root dev
 

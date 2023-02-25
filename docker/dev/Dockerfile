@@ -19,6 +19,8 @@ RUN <<EOF
 EOF
 
 RUN <<EOF
+  go install github.com/kyleconroy/sqlc/cmd/sqlc@latest
+
   go install github.com/cosmtrek/air@latest
   go install github.com/kisielk/errcheck@latest
   go install golang.org/x/tools/gopls@latest
