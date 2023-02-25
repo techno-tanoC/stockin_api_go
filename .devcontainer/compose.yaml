@@ -1,0 +1,28 @@
+services:
+  app:
+    build:
+      context: ../
+      dockerfile: docker/dev/Dockerfile
+    command: sleep infinity
+    depends_on:
+      - db
+    environment:
+      DATABASE: "host=db port=5432 user=root password=pass dbname=dev sslmode=disable"
+      TOKEN: debug
+    init: true
+    platform: linux/x86_64
+    volumes:
+      - ..:/workspace
+      - go:/go
+
+  db:
+    image: postgres:13.7
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: pass
+    platform: linux/x86_64
+    ports:
+      - "5432:5432"
+
+volumes:
+  go:
