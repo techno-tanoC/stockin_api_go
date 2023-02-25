@@ -1,0 +1,20 @@
+version: "2"
+sql:
+  - engine: postgresql
+    queries:
+      - sql/item.sql
+      - sql/tag.sql
+      - sql/item_tag.sql
+    schema: schema.sql
+    gen:
+      go:
+        package: queries
+        out: queries
+        overrides:
+          # https://github.com/kyleconroy/sqlc/issues/1698
+          - db_type: "UUID"
+            go_type: "github.com/gofrs/uuid.UUID"
+            nullable: true
+          - db_type: "UUID"
+            go_type: "github.com/gofrs/uuid.NullUUID"
+            nullable: true
