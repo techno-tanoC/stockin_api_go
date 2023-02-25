@@ -7,6 +7,7 @@ export PGSSLMODE = disable
 start:
 
 seed:
+	go run ./cmd/seed
 
 gen:
 	sqlc generate
