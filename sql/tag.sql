@@ -2,6 +2,7 @@
 SELECT *
 FROM tags
 WHERE id = $1
+LIMIT 1
 ;
 
 -- name: IndexTags :many

@@ -26,6 +26,7 @@ const findTagById = `-- name: FindTagById :one
 SELECT id, name, created_at, updated_at
 FROM tags
 WHERE id = $1
+LIMIT 1
 `
 
 func (q *Queries) FindTagById(ctx context.Context, id uuid.UUID) (Tag, error) {
