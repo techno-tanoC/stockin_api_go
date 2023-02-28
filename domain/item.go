@@ -6,12 +6,12 @@ import (
 )
 
 type Item struct {
-	ID        UUID
-	Title     string
-	URL       string
-	Thumbnail string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        UUID      `json:"id"`
+	Title     string    `json:"title"`
+	URL       string    `json:"url"`
+	Thumbnail string    `json:"thumbnail"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func ItemFromModel(model *queries.Item) *Item {

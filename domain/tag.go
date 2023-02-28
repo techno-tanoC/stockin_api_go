@@ -6,10 +6,10 @@ import (
 )
 
 type Tag struct {
-	ID        UUID
-	Name      string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        UUID      `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func TagFromModel(model *queries.Tag) *Tag {

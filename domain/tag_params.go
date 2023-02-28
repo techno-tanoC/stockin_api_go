@@ -6,7 +6,7 @@ import (
 )
 
 type TagParams struct {
-	Name string
+	Name string `json:"name"`
 }
 
 func (params *TagParams) BuildForInsert() *queries.InsertTagParams {

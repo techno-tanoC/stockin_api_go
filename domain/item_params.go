@@ -6,9 +6,9 @@ import (
 )
 
 type ItemParams struct {
-	Title     string
-	URL       string
-	Thumbnail string
+	Title     string `json:"title"`
+	URL       string `json:"url"`
+	Thumbnail string `json:"thumbnail"`
 }
 
 func (params *ItemParams) BuildForInsert() *queries.InsertItemParams {
