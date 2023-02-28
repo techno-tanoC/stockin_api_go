@@ -6,6 +6,9 @@ export PGSSLMODE = disable
 
 start:
 
+test:
+	go test -v -count=1 ./...
+
 seed:
 	go run ./cmd/seed
 

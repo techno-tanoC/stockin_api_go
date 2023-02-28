@@ -7,7 +7,8 @@ services:
     depends_on:
       - db
     environment:
-      DATABASE: "host=db port=5432 user=root password=pass dbname=dev sslmode=disable"
+      DATABASE: "host=db port=5432 user=root password=pass sslmode=disable dbname=dev"
+      TESTBASE: "host=db port=5432 user=root password=pass sslmode=disable"
       TOKEN: debug
     init: true
     platform: linux/x86_64
