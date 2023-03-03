@@ -3,6 +3,7 @@ module stockin-api
 go 1.20
 
 require (
+	github.com/brianvoe/gofakeit/v6 v6.20.1
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/labstack/echo/v4 v4.10.2
 	github.com/lib/pq v1.10.7
