@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"net/http"
 	"stockin-api/usecases"
 
 	"github.com/gofrs/uuid"
@@ -23,13 +22,13 @@ func (h *ItemHandler) Find(c echo.Context) error {
 	id := c.Param("id")
 	uuid, err := uuid.FromString(id)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "invalid id error")
+		return clientError(c, "invalid id error")
 	}
 
 	items, err := h.usecase.Find(ctx, uuid)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "item not found error")
+		return clientError(c, "item not found error")
 	}
 
-	return c.JSON(http.StatusOK, items)
+	return ok(c, items)
 }
