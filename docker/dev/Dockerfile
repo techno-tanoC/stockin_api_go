@@ -19,6 +19,12 @@ RUN <<EOF
 EOF
 
 RUN <<EOF
+  chown -R vscode:vscode /go
+EOF
+
+USER vscode
+
+RUN <<EOF
   go install github.com/kyleconroy/sqlc/cmd/sqlc@latest
 
   go install github.com/cosmtrek/air@latest
@@ -26,6 +32,4 @@ RUN <<EOF
   go install golang.org/x/tools/gopls@latest
 EOF
 
-RUN <<EOF
-  chown -R vscode:vscode /go
-EOF
+USER root
