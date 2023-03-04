@@ -166,3 +166,22 @@ func TestUpdateTest(t *testing.T) {
 	)
 
 }
+
+func TestDeleteTest(t *testing.T) {
+	ctx := context.Background()
+	db, release := internal.WithTestDatabase(ctx, base, schemaPath)
+	defer release()
+
+	item, err := internal.CreateItem(ctx, db)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	app := handlers.BuildApp(db)
+	req := httptest.NewRequest("DELETE", fmt.Sprintf("/items/%v", item.ID), nil)
+	rec := httptest.NewRecorder()
+	app.ServeHTTP(rec, req)
+
+	asserts := assert.New(t)
+	asserts.Equal(http.StatusNoContent, rec.Code)
+}

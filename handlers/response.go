@@ -27,3 +27,7 @@ func serverError(c echo.Context, message string) error {
 	d := Data{Empty{}, message}
 	return c.JSON(http.StatusInternalServerError, d)
 }
+
+func noContent(c echo.Context) error {
+	return c.JSON(http.StatusNoContent, "")
+}

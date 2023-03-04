@@ -83,3 +83,14 @@ func (u *ItemUsecaseImpl) Update(ctx context.Context, id domain.UUID, params dom
 
 	return item, nil
 }
+
+func (u *ItemUsecaseImpl) Delete(ctx context.Context, id domain.UUID) error {
+	q := queries.New(u.db)
+
+	err := q.DeleteItem(ctx, id)
+	if err != nil {
+		return fmt.Errorf("delete error: %w", err)
+	}
+
+	return nil
+}

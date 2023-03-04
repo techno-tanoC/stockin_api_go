@@ -73,3 +73,20 @@ func (h *ItemHandler) Update(c echo.Context) error {
 
 	return ok(c, item)
 }
+
+func (h *ItemHandler) Delete(c echo.Context) error {
+	ctx := context.Background()
+
+	id := c.Param("id")
+	uuid, err := uuid.FromString(id)
+	if err != nil {
+		return clientError(c, "invalid id error")
+	}
+
+	err = h.usecase.Delete(ctx, uuid)
+	if err != nil {
+		return serverError(c, "internal server error")
+	}
+
+	return noContent(c)
+}
