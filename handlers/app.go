@@ -16,6 +16,7 @@ func BuildApp(db *sql.DB) *echo.Echo {
 		handler := NewItemHandler(usecase)
 
 		items.GET("/:id", handler.Find)
+		items.POST("/", handler.Create)
 	}
 
 	return e

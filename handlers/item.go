@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"stockin-api/domain"
 	"stockin-api/usecases"
 
 	"github.com/gofrs/uuid"
@@ -31,4 +32,21 @@ func (h *ItemHandler) Find(c echo.Context) error {
 	}
 
 	return ok(c, items)
+}
+
+func (h *ItemHandler) Create(c echo.Context) error {
+	ctx := context.Background()
+
+	params := new(domain.ItemParams)
+	err := c.Bind(&params)
+	if err != nil {
+		return clientError(c, "invalid params error")
+	}
+
+	item, err := h.usecase.Create(ctx, params)
+	if err != nil {
+		return serverError(c, "internal server error")
+	}
+
+	return ok(c, item)
 }

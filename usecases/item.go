@@ -27,3 +27,32 @@ func (u *ItemUsecaseImpl) Find(ctx context.Context, id domain.UUID) (*domain.Ite
 
 	return item, nil
 }
+
+func (u *ItemUsecaseImpl) Create(ctx context.Context, params *domain.ItemParams) (*domain.Item, error) {
+	tx, err := u.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, fmt.Errorf("begin tx error: %w", err)
+	}
+	defer tx.Rollback()
+	q := queries.New(tx)
+
+	ps := params.BuildForInsert()
+
+	err = q.InsertItem(ctx, *ps)
+	if err != nil {
+		return nil, fmt.Errorf("insert item error: %w", err)
+	}
+
+	model, err := q.FindItem(ctx, ps.ID)
+	if err != nil {
+		return nil, fmt.Errorf("find item error: %w", err)
+	}
+	item := domain.ItemFromModel(&model)
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, fmt.Errorf("commit error: %w", err)
+	}
+
+	return item, nil
+}

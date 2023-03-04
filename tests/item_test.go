@@ -8,9 +8,11 @@ import (
 	"os"
 	"stockin-api/handlers"
 	"stockin-api/internal"
+	"strings"
 	"testing"
 
 	"github.com/kinbiko/jsonassert"
+	"github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
@@ -55,5 +57,55 @@ func TestItemFind(t *testing.T) {
 		item.Title,
 		item.URL,
 		item.Thumbnail,
+	)
+}
+
+func TestItemCreate(t *testing.T) {
+	ctx := context.Background()
+	db, release := internal.WithTestDatabase(ctx, base, schemaPath)
+	defer release()
+
+	title := "example"
+	url := "https://example.com/"
+	thumbnail := "https://example.com/image.jpg"
+
+	app := handlers.BuildApp(db)
+	req := httptest.NewRequest(
+		"POST",
+		"/items/",
+		strings.NewReader(fmt.Sprintf(
+			`{
+				"title": "%s",
+				"url": "%s",
+				"thumbnail": "%s"
+			}`,
+			title,
+			url,
+			thumbnail,
+		)),
+	)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	app.ServeHTTP(rec, req)
+
+	asserts := assert.New(t)
+	ja := jsonassert.New(t)
+	asserts.Equal(http.StatusOK, rec.Code)
+	ja.Assertf(
+		rec.Body.String(),
+		`{
+			"data": {
+				"id": "<<PRESENCE>>",
+				"title": "%s",
+				"url": "%s",
+				"thumbnail": "%s",
+				"created_at": "<<PRESENCE>>",
+				"updated_at": "<<PRESENCE>>"
+			},
+			"message": ""
+		}`,
+		title,
+		url,
+		thumbnail,
 	)
 }
