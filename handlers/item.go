@@ -50,3 +50,26 @@ func (h *ItemHandler) Create(c echo.Context) error {
 
 	return ok(c, item)
 }
+
+func (h *ItemHandler) Update(c echo.Context) error {
+	ctx := context.Background()
+
+	id := c.Param("id")
+	uuid, err := uuid.FromString(id)
+	if err != nil {
+		return clientError(c, "invalid id error")
+	}
+
+	params := new(domain.ItemParams)
+	err = c.Bind(&params)
+	if err != nil {
+		return clientError(c, "invalid params error")
+	}
+
+	item, err := h.usecase.Update(ctx, uuid, *params)
+	if err != nil {
+		return serverError(c, "internal server error")
+	}
+
+	return ok(c, item)
+}

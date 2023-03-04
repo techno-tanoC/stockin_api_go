@@ -17,6 +17,7 @@ func BuildApp(db *sql.DB) *echo.Echo {
 
 		items.GET("/:id", handler.Find)
 		items.POST("/", handler.Create)
+		items.PUT("/:id", handler.Update)
 	}
 
 	return e

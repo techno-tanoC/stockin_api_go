@@ -56,3 +56,30 @@ func (u *ItemUsecaseImpl) Create(ctx context.Context, params *domain.ItemParams)
 
 	return item, nil
 }
+
+func (u *ItemUsecaseImpl) Update(ctx context.Context, id domain.UUID, params domain.ItemParams) (*domain.Item, error) {
+	tx, err := u.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, fmt.Errorf("begin tx error: %w", err)
+	}
+	defer tx.Rollback()
+	q := queries.New(tx)
+
+	err = q.UpdateItem(ctx, *params.BuildForUpdate(id))
+	if err != nil {
+		return nil, fmt.Errorf("update item error: %w", err)
+	}
+
+	model, err := q.FindItem(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("find item error: %w", err)
+	}
+	item := domain.ItemFromModel(&model)
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, fmt.Errorf("commit error: %w", err)
+	}
+
+	return item, nil
+}
