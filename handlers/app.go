@@ -5,6 +5,7 @@ import (
 	"stockin-api/usecases"
 
 	"github.com/labstack/echo/v4"
+	"github.com/techno-tanoC/sins"
 )
 
 func BuildApp(db *sql.DB) *echo.Echo {
@@ -20,6 +21,14 @@ func BuildApp(db *sql.DB) *echo.Echo {
 		items.POST("/", handler.Create)
 		items.PUT("/:id", handler.Update)
 		items.DELETE("/:id", handler.Delete)
+	}
+
+	query := e.Group("/query")
+	{
+		fetcher := sins.NewFetcher()
+		handler := NewQueryHandler(fetcher)
+		query.POST("/title", handler.Title)
+		query.POST("/thumbnail", handler.Thumbnail)
 	}
 
 	return e

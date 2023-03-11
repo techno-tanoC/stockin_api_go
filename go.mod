@@ -9,9 +9,12 @@ require (
 	github.com/labstack/echo/v4 v4.10.2
 	github.com/lib/pq v1.10.7
 	github.com/stretchr/testify v1.8.1
+	github.com/techno-tanoC/sins v0.0.1
 )
 
 require (
+	github.com/PuerkitoBio/goquery v1.8.1 // indirect
+	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
