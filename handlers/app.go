@@ -17,8 +17,8 @@ func BuildApp(db *sql.DB) *echo.Echo {
 		handler := NewItemHandler(usecase)
 
 		items.GET("/:id", handler.Find)
-		items.GET("/", handler.FindByRange)
-		items.POST("/", handler.Create)
+		items.GET("", handler.FindByRange)
+		items.POST("", handler.Create)
 		items.PUT("/:id", handler.Update)
 		items.DELETE("/:id", handler.Delete)
 	}
