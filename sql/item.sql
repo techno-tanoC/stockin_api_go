@@ -11,6 +11,14 @@ FROM items
 ORDER BY id
 ;
 
+-- name: FindItemsByRange :many
+SELECT *
+FROM items
+WHERE id < $1
+ORDER BY id DESC
+LIMIT $2
+;
+
 -- name: InsertItem :exec
 INSERT INTO items(id, title, url, thumbnail, created_at, updated_at)
 VALUES ($1, $2, $3, $4, $5, $6)

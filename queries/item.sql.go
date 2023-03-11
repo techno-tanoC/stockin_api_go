@@ -43,6 +43,49 @@ func (q *Queries) FindItem(ctx context.Context, id uuid.UUID) (Item, error) {
 	return i, err
 }
 
+const findItemsByRange = `-- name: FindItemsByRange :many
+SELECT id, title, url, thumbnail, created_at, updated_at
+FROM items
+WHERE id < $1
+ORDER BY id DESC
+LIMIT $2
+`
+
+type FindItemsByRangeParams struct {
+	ID    uuid.UUID
+	Limit int32
+}
+
+func (q *Queries) FindItemsByRange(ctx context.Context, arg FindItemsByRangeParams) ([]Item, error) {
+	rows, err := q.db.QueryContext(ctx, findItemsByRange, arg.ID, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Item
+	for rows.Next() {
+		var i Item
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Url,
+			&i.Thumbnail,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const indexItems = `-- name: IndexItems :many
 SELECT id, title, url, thumbnail, created_at, updated_at
 FROM items
