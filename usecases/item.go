@@ -28,6 +28,24 @@ func (u *ItemUsecaseImpl) Find(ctx context.Context, id domain.UUID) (*domain.Ite
 	return item, nil
 }
 
+func (u *ItemUsecaseImpl) FindByRange(ctx context.Context, params *domain.ItemRangeParams) ([]*domain.Item, error) {
+	q := queries.New(u.db)
+
+	ps := params.Build()
+	models, err := q.FindItemsByRange(ctx, *ps)
+	if err != nil {
+		return nil, fmt.Errorf("find items by range error: %w", err)
+	}
+
+	items := []*domain.Item{}
+	for _, model := range models {
+		item := domain.ItemFromModel(&model)
+		items = append(items, item)
+	}
+
+	return items, nil
+}
+
 func (u *ItemUsecaseImpl) Create(ctx context.Context, params *domain.ItemParams) (*domain.Item, error) {
 	tx, err := u.db.BeginTx(ctx, nil)
 	if err != nil {

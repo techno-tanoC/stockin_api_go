@@ -34,6 +34,27 @@ func (h *ItemHandler) Find(c echo.Context) error {
 	return ok(c, items)
 }
 
+func (h *ItemHandler) FindByRange(c echo.Context) error {
+	ctx := context.Background()
+
+	params := domain.DefaultItemRangePrams()
+	err := c.Bind(params)
+	if err != nil {
+		return clientError(c, "invalid params error")
+	}
+	err = params.Validate()
+	if err != nil {
+		return clientError(c, "invalid params error")
+	}
+
+	items, err := h.usecase.FindByRange(ctx, params)
+	if err != nil {
+		return serverError(c, "internal server error")
+	}
+
+	return ok(c, items)
+}
+
 func (h *ItemHandler) Create(c echo.Context) error {
 	ctx := context.Background()
 
