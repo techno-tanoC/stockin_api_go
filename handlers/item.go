@@ -28,7 +28,7 @@ func (h *ItemHandler) Find(c echo.Context) error {
 
 	items, err := h.usecase.Find(ctx, uuid)
 	if err != nil {
-		return clientError(c, "item not found error")
+		return serverError(c, "internal server error")
 	}
 
 	return ok(c, items)
