@@ -11,7 +11,6 @@ services:
       TESTBASE: "host=db port=5432 user=root password=pass sslmode=disable"
       TOKEN: debug
     init: true
-    platform: linux/x86_64
     ports:
       - "3000:3000"
     volumes:
@@ -23,7 +22,6 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: pass
-    platform: linux/x86_64
     ports:
       - "5432:5432"
 
