@@ -4,7 +4,9 @@ DATABASE_PASS ?= pass
 export PGPASSWORD = $(DATABASE_PASS)
 export PGSSLMODE = disable
 
-start:
+lint:
+	go vet ./...
+	errcheck -verbose -ignoregenerated ./...
 
 test:
 	go test -v -count=1 ./...
