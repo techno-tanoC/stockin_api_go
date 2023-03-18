@@ -111,3 +111,31 @@ func (h *ItemHandler) Delete(c echo.Context) error {
 
 	return noContent(c)
 }
+
+func (h *ItemHandler) Export(c echo.Context) error {
+	ctx := context.Background()
+
+	items, err := h.usecase.Export(ctx)
+	if err != nil {
+		return serverError(c, "internal server error")
+	}
+
+	return raw(c, items)
+}
+
+func (h *ItemHandler) Import(c echo.Context) error {
+	ctx := context.Background()
+
+	params := new([]*domain.Item)
+	err := c.Bind(&params)
+	if err != nil {
+		return clientError(c, "invalid params error")
+	}
+
+	err = h.usecase.Import(ctx, *params)
+	if err != nil {
+		return serverError(c, "internal server error")
+	}
+
+	return noContent(c)
+}

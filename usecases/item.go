@@ -112,3 +112,44 @@ func (u *ItemUsecaseImpl) Delete(ctx context.Context, id domain.UUID) error {
 
 	return nil
 }
+
+func (u *ItemUsecaseImpl) Export(ctx context.Context) ([]*domain.Item, error) {
+	q := queries.New(u.db)
+
+	models, err := q.IndexItems(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("index items error: %w", err)
+	}
+
+	items := []*domain.Item{}
+	for _, model := range models {
+		item := domain.ItemFromModel(&model)
+		items = append(items, item)
+	}
+
+	return items, nil
+}
+
+func (u *ItemUsecaseImpl) Import(ctx context.Context, items []*domain.Item) error {
+	tx, err := u.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("begin tx error: %w", err)
+	}
+	defer tx.Rollback()
+	q := queries.New(tx)
+
+	for _, item := range items {
+		ps := item.BuildForInsert()
+		err = q.InsertItem(ctx, *ps)
+		if err != nil {
+			return fmt.Errorf("insert item error: %w", err)
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("commit error: %w", err)
+	}
+
+	return nil
+}

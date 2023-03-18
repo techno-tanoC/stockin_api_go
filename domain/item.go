@@ -24,3 +24,14 @@ func ItemFromModel(model *queries.Item) *Item {
 		UpdatedAt: model.UpdatedAt,
 	}
 }
+
+func (i *Item) BuildForInsert() *queries.InsertItemParams {
+	return &queries.InsertItemParams{
+		ID:        i.ID,
+		Title:     i.Title,
+		Url:       i.URL,
+		Thumbnail: i.Thumbnail,
+		CreatedAt: i.CreatedAt,
+		UpdatedAt: i.UpdatedAt,
+	}
+}

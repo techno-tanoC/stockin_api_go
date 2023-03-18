@@ -21,6 +21,8 @@ func BuildApp(db *sql.DB) *echo.Echo {
 		items.POST("", handler.Create)
 		items.PUT("/:id", handler.Update)
 		items.DELETE("/:id", handler.Delete)
+		items.GET("/export", handler.Export)
+		items.POST("/import", handler.Import)
 	}
 
 	query := e.Group("/query")

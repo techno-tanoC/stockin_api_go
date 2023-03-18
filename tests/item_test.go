@@ -2,10 +2,13 @@ package test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"sort"
+	"stockin-api/domain"
 	"stockin-api/handlers"
 	"stockin-api/internal"
 	"strings"
@@ -222,4 +225,48 @@ func TestDeleteTest(t *testing.T) {
 
 	asserts := assert.New(t)
 	asserts.Equal(http.StatusNoContent, rec.Code)
+}
+
+func TestItemImportAndExport(t *testing.T) {
+	ctx := context.Background()
+	db, release := internal.WithTestDatabase(ctx, base, schemaPath)
+	defer release()
+
+	app := handlers.BuildApp(db)
+	asserts := assert.New(t)
+	ja := jsonassert.New(t)
+
+	items := []*domain.Item{}
+	for i := 0; i < 3; i++ {
+		item := internal.NewItem().Domain()
+		items = append(items, item)
+	}
+	sort.Slice(items, func(i, j int) bool { return items[i].ID.String() < items[j].ID.String() })
+	bs, err := json.Marshal(items)
+	if err != nil {
+		t.Fatal(err)
+	}
+	j := string(bs)
+
+	{
+		req := httptest.NewRequest(
+			"POST",
+			"/items/import",
+			strings.NewReader(j),
+		)
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		app.ServeHTTP(rec, req)
+
+		asserts.Equal(http.StatusNoContent, rec.Code)
+	}
+
+	{
+		req := httptest.NewRequest("GET", "/items/export", nil)
+		rec := httptest.NewRecorder()
+		app.ServeHTTP(rec, req)
+
+		asserts.Equal(http.StatusOK, rec.Code)
+		ja.Assertf(rec.Body.String(), j)
+	}
 }

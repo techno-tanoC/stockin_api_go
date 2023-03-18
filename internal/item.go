@@ -22,7 +22,20 @@ type Item struct {
 func NewItem() *Item {
 	var item Item
 	gofakeit.Struct(&item)
+	item.CreatedAt = item.CreatedAt.Truncate(time.Microsecond)
+	item.UpdatedAt = item.UpdatedAt.Truncate(time.Microsecond)
 	return &item
+}
+
+func (i *Item) Domain() *domain.Item {
+	return &domain.Item{
+		ID:        i.ID,
+		Title:     i.Title,
+		URL:       i.URL,
+		Thumbnail: i.Thumbnail,
+		CreatedAt: i.CreatedAt,
+		UpdatedAt: i.UpdatedAt,
+	}
 }
 
 func CreateItem(ctx context.Context, db *sql.DB) (*Item, error) {
