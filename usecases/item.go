@@ -51,7 +51,7 @@ func (u *ItemUsecaseImpl) Create(ctx context.Context, params *domain.ItemParams)
 	if err != nil {
 		return nil, fmt.Errorf("begin tx error: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 	q := queries.New(tx)
 
 	ps := params.BuildForInsert()
@@ -80,7 +80,7 @@ func (u *ItemUsecaseImpl) Update(ctx context.Context, id domain.UUID, params dom
 	if err != nil {
 		return nil, fmt.Errorf("begin tx error: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 	q := queries.New(tx)
 
 	err = q.UpdateItem(ctx, *params.BuildForUpdate(id))
@@ -135,7 +135,7 @@ func (u *ItemUsecaseImpl) Import(ctx context.Context, items []*domain.Item) erro
 	if err != nil {
 		return fmt.Errorf("begin tx error: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 	q := queries.New(tx)
 
 	for _, item := range items {

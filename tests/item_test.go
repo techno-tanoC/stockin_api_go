@@ -35,8 +35,14 @@ func TestItemCRUD(t *testing.T) {
 	asserts := assert.New(t)
 	ja := jsonassert.New(t)
 
-	item := internal.NewItem()
-	newItem := internal.NewItem()
+	item, err := internal.NewItem()
+	if err != nil {
+		t.Fatal(err)
+	}
+	newItem, err := internal.NewItem()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	{
 		req := httptest.NewRequest(
@@ -81,7 +87,10 @@ func TestItemCRUD(t *testing.T) {
 				ID uuid.UUID `json:"id"`
 			} `json:"data"`
 		}{}
-		json.Unmarshal(rec.Body.Bytes(), i)
+		err = json.Unmarshal(rec.Body.Bytes(), i)
+		if err != nil {
+			t.Fatal(err)
+		}
 		item.ID = i.Data.ID
 	}
 
@@ -209,8 +218,11 @@ func TestItemImportAndExport(t *testing.T) {
 
 	items := []*domain.Item{}
 	for i := 0; i < 3; i++ {
-		item := internal.NewItem().Domain()
-		items = append(items, item)
+		item, err := internal.NewItem()
+		if err != nil {
+			t.Fatal(err)
+		}
+		items = append(items, item.Domain())
 	}
 	sort.Slice(items, func(i, j int) bool { return items[i].ID.String() < items[j].ID.String() })
 	bs, err := json.Marshal(items)

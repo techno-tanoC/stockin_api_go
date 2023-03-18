@@ -23,19 +23,19 @@ func WithTestDatabase(ctx context.Context, base string, path string) (*sql.DB, f
 	database := fmt.Sprintf("%s dbname=%s", base, dbname)
 	db, err := sql.Open("postgres", database)
 	if err != nil {
-		dropTestDatabase(ctx, base, dbname)
+		_ = dropTestDatabase(ctx, base, dbname)
 		log.Fatalf("open database error %v", err)
 	}
 
 	err = createSchema(ctx, db, path)
 	if err != nil {
-		db.Close()
-		dropTestDatabase(ctx, base, dbname)
+		_ = db.Close()
+		_ = dropTestDatabase(ctx, base, dbname)
 		log.Fatalf("create schema error %v", err)
 	}
 
 	return db, func() {
-		db.Close()
+		_ = db.Close()
 		err = dropTestDatabase(ctx, base, dbname)
 		if err != nil {
 			log.Fatalf("drop database error %v", err)

@@ -19,12 +19,15 @@ type Item struct {
 	UpdatedAt time.Time
 }
 
-func NewItem() *Item {
+func NewItem() (*Item, error) {
 	var item Item
-	gofakeit.Struct(&item)
+	err := gofakeit.Struct(&item)
+	if err != nil {
+		return nil, err
+	}
 	item.CreatedAt = item.CreatedAt.Truncate(time.Microsecond)
 	item.UpdatedAt = item.UpdatedAt.Truncate(time.Microsecond)
-	return &item
+	return &item, nil
 }
 
 func (i *Item) Domain() *domain.Item {
@@ -39,7 +42,11 @@ func (i *Item) Domain() *domain.Item {
 }
 
 func CreateItem(ctx context.Context, db *sql.DB) (*Item, error) {
-	item := NewItem()
+	item, err := NewItem()
+	if err != nil {
+		return nil, err
+	}
+
 	params := queries.InsertItemParams{
 		ID:        item.ID,
 		Title:     item.Title,
@@ -48,10 +55,11 @@ func CreateItem(ctx context.Context, db *sql.DB) (*Item, error) {
 		CreatedAt: item.CreatedAt,
 		UpdatedAt: item.UpdatedAt,
 	}
-	err := queries.New(db).InsertItem(ctx, params)
+	err = queries.New(db).InsertItem(ctx, params)
 	if err != nil {
 		return nil, err
 	}
+
 	return item, nil
 }
 
@@ -64,5 +72,6 @@ func CreateItems(ctx context.Context, db *sql.DB, n int) ([]*Item, error) {
 		}
 		items = append(items, item)
 	}
+
 	return items, nil
 }
