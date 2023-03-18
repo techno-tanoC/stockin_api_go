@@ -32,3 +32,6 @@ apply:
 setup: drop create apply
 
 reset: setup seed
+
+wait:
+	dockerize -wait tcp://$(DATABASE_HOST):5432 -timeout 60s

@@ -45,8 +45,8 @@ jobs:
 
       - name: Wait database
         run: |
-          docker compose -f docker/test/compose.yaml exec app dockerize -wait tcp://db:5432 -timeout 60s
+          docker compose -f docker/test/compose.yaml exec app make wait
 
       - name: Run tests
         run: |
-          docker compose -f docker/test/compose.yaml exec app go test -v -count=1 ./...
+          docker compose -f docker/test/compose.yaml exec app make test
