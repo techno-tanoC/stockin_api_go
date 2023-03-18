@@ -59,7 +59,7 @@ func (h *ItemHandler) Create(c echo.Context) error {
 	ctx := context.Background()
 
 	params := new(domain.ItemParams)
-	err := c.Bind(&params)
+	err := c.Bind(params)
 	if err != nil {
 		return clientError(c, "invalid params error")
 	}
@@ -82,7 +82,7 @@ func (h *ItemHandler) Update(c echo.Context) error {
 	}
 
 	params := new(domain.ItemParams)
-	err = c.Bind(&params)
+	err = c.Bind(params)
 	if err != nil {
 		return clientError(c, "invalid params error")
 	}
