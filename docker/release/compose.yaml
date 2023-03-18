@@ -1,0 +1,19 @@
+services:
+  app:
+    restart: unless-stopped
+    image: ${IMAGE_TAG}
+    environment:
+      DATABASE: "host=db port=5432 user=root password=${DATABASE_PASS} dbname=prod sslmode=disable"
+      DATABASE_PASS: ${DATABASE_PASS}
+      TOKEN: ${AUTH_TOKEN}
+    ports:
+      - "36919:3000"
+
+  db:
+    restart: unless-stopped
+    image: postgres:13.7
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: ${DATABASE_PASS}
+    volumes:
+      - /var/lib/stockin_api/postgres/data:/var/lib/postgresql/data
