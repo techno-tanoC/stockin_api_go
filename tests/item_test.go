@@ -71,7 +71,7 @@ func TestItemsFindByRange(t *testing.T) {
 	}
 
 	app := handlers.BuildApp(db)
-	req := httptest.NewRequest("GET", fmt.Sprintf("/items/?before=%s&limit=1", items[2].ID), nil)
+	req := httptest.NewRequest("GET", fmt.Sprintf("/items?before=%s&limit=1", items[2].ID), nil)
 	rec := httptest.NewRecorder()
 	app.ServeHTTP(rec, req)
 
@@ -110,7 +110,7 @@ func TestItemCreate(t *testing.T) {
 	app := handlers.BuildApp(db)
 	req := httptest.NewRequest(
 		"POST",
-		"/items/",
+		"/items",
 		strings.NewReader(fmt.Sprintf(
 			`{
 				"title": "%s",
