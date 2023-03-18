@@ -33,3 +33,5 @@ RUN <<EOF
 EOF
 
 USER root
+
+ENV GOPRIVATE=github.com/techno-tanoC/sins
