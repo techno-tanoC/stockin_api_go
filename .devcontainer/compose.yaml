@@ -12,6 +12,8 @@ services:
       TOKEN: debug
     init: true
     platform: linux/x86_64
+    ports:
+      - "3000:3000"
     volumes:
       - ..:/workspace
       - go:/go
