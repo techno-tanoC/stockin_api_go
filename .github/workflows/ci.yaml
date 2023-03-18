@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - sqlc
+  pull_request:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Start containers
+        run: |
+          docker compose -f docker/test/compose.yaml up -d
+
+      - name: Setup .netrc
+        run: |
+          docker compose -f docker/test/compose.yaml exec app bash -c "echo 'machine github.com login techno-tanoC password ${{ secrets.GO_MODULE_GITHUB_TOKEN }}' > ~/.netrc"
+
+      - name: Build deps
+        run: |
+          docker compose -f docker/test/compose.yaml exec app go mod download -x
+
+      - name: Wait database
+        run: |
+          docker compose -f docker/test/compose.yaml exec app dockerize -wait tcp://db:5432 -timeout 60s
+
+      - name: Run tests
+        run: |
+          docker compose -f docker/test/compose.yaml exec app go test -v -count=1 ./...
