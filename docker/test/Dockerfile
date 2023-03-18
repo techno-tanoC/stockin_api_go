@@ -20,4 +20,8 @@ RUN <<EOF
   rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 EOF
 
+RUN <<EOF
+  go install github.com/kisielk/errcheck@latest
+EOF
+
 COPY . .
