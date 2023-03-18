@@ -19,10 +19,6 @@ jobs:
         run: |
           docker compose -f docker/test/compose.yaml up -d
 
-      - name: Setup .netrc
-        run: |
-          docker compose -f docker/test/compose.yaml exec app bash -c "echo 'machine github.com login techno-tanoC password ${{ secrets.GO_MODULE_GITHUB_TOKEN }}' > ~/.netrc"
-
       - name: Build deps
         run: |
           docker compose -f docker/test/compose.yaml exec app go mod download -x

@@ -20,6 +20,4 @@ RUN <<EOF
   rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 EOF
 
-ENV GOPRIVATE=github.com/techno-tanoC/sins
-
 COPY . .
