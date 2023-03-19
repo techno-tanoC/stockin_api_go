@@ -13,7 +13,7 @@ services:
     init: true
 
   db:
-    image: postgres:13.7
+    image: postgres:15.2
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: pass
