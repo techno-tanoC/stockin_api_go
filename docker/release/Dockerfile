@@ -34,6 +34,6 @@ RUN <<EOF
 EOF
 
 COPY schema.sql Makefile ./
-COPY --from=builder /workspace/api /workspace/app
+COPY --from=builder /workspace/api ./api
 
-CMD ["/workspace/app"]
+CMD ["/workspace/api"]
