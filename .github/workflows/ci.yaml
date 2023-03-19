@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - sqlc
+      - main
   pull_request:
 
 jobs:
