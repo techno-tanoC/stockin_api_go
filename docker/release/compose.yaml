@@ -1,9 +1,7 @@
 services:
   app:
     restart: unless-stopped
-    build:
-      context: ../../
-      dockerfile: ./docker/release/Dockerfile
+    image: ${IMAGE_TAG}
     environment:
       DATABASE: "host=db port=5432 user=root password=${DATABASE_PASS} dbname=prod sslmode=disable"
       DATABASE_PASS: ${DATABASE_PASS}

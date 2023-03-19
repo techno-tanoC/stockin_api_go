@@ -2,41 +2,43 @@ name: CD
 
 on:
   push:
-    branches:
-      - sqlc
-    # tags:
-    #   - v*
+    tags:
+      - v*
 
 jobs:
-  build_and_push:
-    name: Build and Push
+  deploy:
+    name: Deploy
     runs-on: [self-hosted, rutile]
     timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Login GitLab
-        uses: docker/login-action@v2
-        with:
-          registry: registry.gitlab.com
-          username: techno-tanoC
-          password: ${{ secrets.GITLAB_DEPLOY_API_TOKEN }}
-
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: registry.gitlab.com/techno-tanoc/stockin_api
+          images: stockin_api
           flavor: |
             latest=false
           tags: |
             type=semver,pattern={{version}}
 
-      - name: Build and Push
+      - name: Build
         uses: docker/build-push-action@v4
         with:
           context: ./
           file: ./docker/release/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           push: false
+
+      - name: Deploy
+        env:
+          IMAGE_TAG: ${{ steps.meta.outputs.tags }}
+          DATABASE_PASS: ${{ secrets.DATABASE_PASS }}
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+        run: |
+          docker-compose -f docker/release/compose.yaml up -d db
+          docker-compose -f docker/release/compose.yaml run --rm app make wait
+          docker-compose -f docker/release/compose.yaml run --rm app make migrate
+          docker-compose -f docker/release/compose.yaml up -d app
