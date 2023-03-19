@@ -35,3 +35,8 @@ reset: setup seed
 
 wait:
 	dockerize -wait tcp://$(DATABASE_HOST):5432 -timeout 60s
+
+migrate:
+	psql --host=$(DATABASE_HOST) --user=root --command "CREATE DATABASE prod" | true
+	cat schema.sql | psqldef --host $(DATABASE_HOST) --user root prod --dry-run
+	cat schema.sql | psqldef --host $(DATABASE_HOST) --user root prod
