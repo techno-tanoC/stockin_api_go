@@ -5,18 +5,26 @@ import (
 	"database/sql"
 	"log"
 	"math/rand"
-	"os"
 	"stockin-api/domain"
 	"stockin-api/queries"
 
 	_ "github.com/lib/pq"
+	"github.com/sethvargo/go-envconfig"
 )
+
+type Config struct {
+	Database string `env:"DATABASE,required"`
+}
 
 func main() {
 	ctx := context.Background()
-	database := os.Getenv("DATABASE")
+	conf := new(Config)
+	err := envconfig.Process(ctx, conf)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	db, err := sql.Open("postgres", database)
+	db, err := sql.Open("postgres", conf.Database)
 	if err != nil {
 		log.Fatal(err)
 	}

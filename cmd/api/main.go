@@ -1,25 +1,38 @@
 package main
 
 import (
+	"context"
 	"database/sql"
+	"fmt"
 	"log"
-	"os"
 	"stockin-api/handlers"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/lib/pq"
+	"github.com/sethvargo/go-envconfig"
 )
 
+type Config struct {
+	Database string `env:"DATABASE,required"`
+	Port     int    `env:"PORT,default=3000"`
+	Token    string `env:"TOKEN,required"`
+}
+
 func main() {
-	database := os.Getenv("DATABASE")
-	db, err := sql.Open("postgres", database)
+	ctx := context.Background()
+	conf := new(Config)
+	err := envconfig.Process(ctx, conf)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	token := os.Getenv("TOKEN")
-	auth := &Auth{token}
+	db, err := sql.Open("postgres", conf.Database)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	auth := &Auth{token: conf.Token}
 
 	e := handlers.BuildApp(db)
 
@@ -28,7 +41,7 @@ func main() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.KeyAuth(auth.auth))
 
-	e.Logger.Fatal(e.Start(":3000"))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", conf.Port)))
 }
 
 type Auth struct {
